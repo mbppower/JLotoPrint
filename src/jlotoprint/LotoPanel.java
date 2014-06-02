@@ -5,21 +5,19 @@
  */
 package jlotoprint;
 
-
+import jlotoprint.model.Model;
+import jlotoprint.model.MarkInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -35,13 +33,14 @@ public class LotoPanel extends Pane {
 	private double originY;
 	public Boolean isEditEnabled = true;
 	public Model model = new Model();
-	
+
 	public LotoPanel(Boolean isEditEnabled) {
 		this.isEditEnabled = isEditEnabled;
 		double w = model.getImageWidth();
 		double h = model.getImageHeight();
 		String size = w + "px " + h + "px";
-		setStyle("-fx-border-color:red; -fx-background-color: #00ffaa; -fx-background-repeat: no-repeat; -fx-background-image: url(\"" + model.getImage() + "\"); -fx-background-size:contain");
+		String image = isEditEnabled ? model.getImagePreview() : model.getImage();
+		setStyle("-fx-border-color:red; -fx-background-color: #00ffaa; -fx-background-repeat: no-repeat; -fx-background-image: url(\"" + image + "\"); -fx-background-size:contain");
 		setMinSize(w, h);
 		setMaxSize(w, h);
 	}
@@ -99,7 +98,7 @@ public class LotoPanel extends Pane {
 					//target.relocate(posX, posY);
 					target.setTranslateX(posX);
 					target.setTranslateY(posY);
-					
+
 					//update model
 					m.setX(target.getTranslateX());
 					m.setY(target.getTranslateY());
@@ -140,7 +139,7 @@ public class LotoPanel extends Pane {
 		int i = 0;
 		for (ArrayList<MarkInfo> group : model.getGroupMap().values()) {
 			for (MarkInfo m : group) {
-				if(i < data.size()){
+				if (i < data.size()) {
 					m.render(data.get(i));
 				}
 			}
@@ -151,12 +150,11 @@ public class LotoPanel extends Pane {
 	public void importMarks() {
 		try {
 			StringWriter writer = new StringWriter();
-			IOUtils.copy(getClass().getResourceAsStream("defaultModel.json"), writer, "UTF-8");
+			IOUtils.copy(getClass().getResourceAsStream("resources/defaultModel.json"), writer, "UTF-8");
 			Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			model = g.fromJson(writer.toString(), Model.class);
 			createMarkFromInfo(model.getGroupMap());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

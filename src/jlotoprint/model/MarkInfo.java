@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jlotoprint;
+package jlotoprint.model;
 
 import com.google.gson.annotations.Expose;
 import javafx.scene.paint.Color;
@@ -50,7 +50,7 @@ public class MarkInfo {
 		}
 	}
 
-	void render(String[] n) {
+	public void render(String[] n) {
 		for(String v : n){
 			if(v.equals(toggleValue)){
 				//System.out.println("v: " + v + " - " + toggleValue);

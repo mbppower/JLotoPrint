@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.FXMLDocumentController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.MainViewController">
 	<children>
 		<Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
 		<TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns:fx="http://javafx.com/fxml">
@@ -39,7 +39,7 @@
 				</Tab>
 				<Tab text="Impressão">
 					<content>
-						<fx:include fx:id="printViewUIPanel" source="printViewUIPanel.fxml" />
+						<fx:include fx:id="printViewUIPanel" source="PrintViewUIPanel.fxml" />
 					</content>
 				</Tab>
 			</tabs>

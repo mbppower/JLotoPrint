@@ -1,15 +1,15 @@
-package jlotoprint;
-
-import com.google.gson.annotations.Expose;
-import java.util.ArrayList;
-import java.util.HashMap;
-import jlotoprint.MarkInfo;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package jlotoprint.model;
+
+import com.google.gson.annotations.Expose;
+import java.util.ArrayList;
+import java.util.HashMap;
+import jlotoprint.model.MarkInfo;
+
 /**
  *
  * @author Marcel.Barbosa
@@ -17,7 +17,9 @@ import jlotoprint.MarkInfo;
 public class Model {
 
 	@Expose
-	private String image = "/jlotoprint/lotofacil.png";
+	private String image = "/jlotoprint/resources/lotofacil.png";
+	@Expose
+	private String imagePreview = "/jlotoprint/resources/lotofacil-preview.png";
 	@Expose
 	private double imageWidth = 644;
 	@Expose
@@ -34,6 +36,14 @@ public class Model {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public String getImagePreview() {
+		return imagePreview;
+	}
+
+	public void setImagePreview(String imagePreview) {
+		this.imagePreview = imagePreview;
 	}
 
 	public double getImageWidth() {

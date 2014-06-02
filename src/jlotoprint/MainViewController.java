@@ -6,8 +6,6 @@
 
 package jlotoprint;
 
-import com.google.gson.Gson;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -16,21 +14,18 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.print.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
  * @author Marcel.Barbosa
  */
-public class FXMLDocumentController implements Initializable {
+public class MainViewController implements Initializable {
 	
 	@FXML
 	public Label label;

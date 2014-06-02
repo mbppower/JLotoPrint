@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="AnchorPane" xmlns="http://javafx.com/javafx/8" fx:controller="jlotoprint.PrintViewUIPanelController">
+	<children>
+		<SplitPane dividerPositions="0.8" focusTraversable="true" layoutX="220.0" layoutY="100.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<items>
+				<AnchorPane fx:id="" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+					<children>
+						<ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns:fx="http://javafx.com/fxml">
+							<content>
+								<Pane>
+									<children>
+										<VBox fx:id="pageContainer" alignment="CENTER" spacing="10.0">
+											<children>
+											</children>
+											<VBox.margin>
+												<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+											</VBox.margin>
+										</VBox>
+									</children>
+								</Pane>
+							</content>
+						</ScrollPane>
+					</children>
+				</AnchorPane>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+					<children>
+						<HBox alignment="CENTER" spacing="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+							<children>
+								<Button mnemonicParsing="false" onAction="#handlePreviousAction" text="Anterior" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0" />
+								<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-radius: 10px; -fx-background-color: #ccc;">
+									<children>
+										<Button mnemonicParsing="false" text="Imprimir" onAction="#handlePrintAction" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+										<Button mnemonicParsing="false" text="Carregar Jogos" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+									</children>
+									<HBox.margin>
+										<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+									</HBox.margin>
+								</HBox>
+								<Button mnemonicParsing="false" onAction="#handleNextAction" text="Próximo" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+							</children>
+						</HBox>
+					</children>
+				</AnchorPane>
+			</items>
+		</SplitPane>
+	</children>
+</AnchorPane>
