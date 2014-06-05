@@ -25,6 +25,7 @@ import javafx.print.PrintResolution;
 import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -39,16 +40,19 @@ import javafx.stage.FileChooser;
 public class PrintViewUIPanelController implements Initializable {
 
 	private List<Pane> pageList = new ArrayList<>();
-
+	private int currentPage = -1;
 	@FXML
 	public Pane pageContainer;
 
 	@FXML
 	public GridPane gridContainer;
-
+	
+	@FXML
+	public Label pageInfoLabel;
+	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-
+		updatePageInfo();
 	}
 
 	public List<String> readTextFileAsList(File file) {
@@ -71,7 +75,8 @@ public class PrintViewUIPanelController implements Initializable {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select a source");
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text File", "*.txt"));
-		File sourceFile = fileChooser.showOpenDialog(null);
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		File sourceFile = fileChooser.showOpenDialog(JLotoPrint.stage.getOwner());
 
 		if (sourceFile != null) {
 			List<String> lines = readTextFileAsList(sourceFile);
@@ -97,6 +102,7 @@ public class PrintViewUIPanelController implements Initializable {
 			int currentRow = 0;
 
 			GridPane gridContainer = new GridPane();
+			pageContainer.getChildren().clear();
 			pageList = new ArrayList<>();
 			pageList.add(getNewPage(gridContainer));
 
@@ -105,7 +111,7 @@ public class PrintViewUIPanelController implements Initializable {
 				LotoPanel lotoPanel = new LotoPanel(false);
 				lotoPanel.importMarks();
 
-				System.out.print("groupData: " + groupData.size());
+				System.out.println("groupData: " + groupData.size());
 				lotoPanel.render(groupData);
 
 				if (currentCol > 0 && currentCol % colCount == 0) {
@@ -120,30 +126,58 @@ public class PrintViewUIPanelController implements Initializable {
 				gridContainer.add(lotoPanel, currentCol, currentRow);
 				currentCol++;
 			}
-			pageContainer.getChildren().addAll(pageList);
+			//pageContainer.getChildren().addAll(pageList);
+			currentPage = -1;
+			renderNextPage();
 		}
 	}
 
 	private Pane getNewPage(GridPane gridContainer) {
 		Pane page = new Pane();
 		//A4 paper size
-		page.setStyle("-fx-min-width:210mm; -fx-min-height:297mm; -fx-background-color: #red; -fx-border-width: 1px; -fx-border-color:black;");
+		page.setStyle("-fx-min-width:210mm; -fx-min-height:297mm; -fx-background-color: white; -fx-border-width: 1px; -fx-border-color:black;");
 		page.setPadding(new Insets(10));
 		//page.setPrefSize(2000, 2000);
 		page.getChildren().add(gridContainer);
 		return page;
 	}
-
+	private void renderNextPage(){
+		if(pageList.size() > 0){
+			if(++currentPage >= pageList.size()){
+				currentPage = 0;
+			}
+			pageContainer.getChildren().clear();
+			pageContainer.getChildren().add(pageList.get(currentPage));
+			updatePageInfo();
+		}
+	}
+	private void renderPreviousPage(){
+		if(pageList.size() > 0){
+			if(--currentPage < 0){
+				currentPage = pageList.size() - 1;
+			}
+			pageContainer.getChildren().clear();
+			pageContainer.getChildren().add(pageList.get(currentPage));
+			updatePageInfo();
+		}
+	}
 	@FXML
 	private void handleNextAction(ActionEvent event) {
-		renderLotoPanel();
+		renderNextPage();
 	}
-
+	private void updatePageInfo() {
+		pageInfoLabel.setText((pageList.size() > 0 ? (currentPage + 1) : 0) + "/" + pageList.size());
+	}
 	@FXML
 	private void handlePreviousAction(ActionEvent event) {
+		renderPreviousPage();
+	}
+	
+	@FXML
+	private void handleLoadGamesAction(ActionEvent event) {
 		renderLotoPanel();
 	}
-
+	
 	@FXML
 	private void handlePrintAction(ActionEvent event) {
 		print();
@@ -156,16 +190,21 @@ public class PrintViewUIPanelController implements Initializable {
 
 		PrinterJob job = PrinterJob.createPrinterJob();
 		PrintResolution resolution = job.getJobSettings().getPrintResolution();
-
-		if (job != null) {
+		
+		if (job.showPrintDialog(JLotoPrint.stage.getOwner())) {
 			try {
+				
 				for (Node node : pageList) {
 					double scaleX = pageLayout.getPrintableWidth() / node.getBoundsInLocal().getWidth();
 					double scaleY = pageLayout.getPrintableHeight() / node.getBoundsInLocal().getHeight();
 					node.getTransforms().add(new Scale(scaleX, scaleY));
 					job.printPage(node);
 				}
-			} finally {
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+			finally {
 				job.endJob();
 			}
 		}

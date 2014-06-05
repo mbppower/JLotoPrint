@@ -18,6 +18,7 @@ import javafx.stage.Stage;
  */
 public class JLotoPrint extends Application {
 	static Parent root;
+	static Stage stage;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -27,6 +28,7 @@ public class JLotoPrint extends Application {
 		
 		stage.setScene(scene);
 		stage.show();
+		this.stage = stage;
 	}
 
 	/**

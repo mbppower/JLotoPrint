@@ -35,8 +35,9 @@
 								<Button mnemonicParsing="false" onAction="#handlePreviousAction" text="Anterior" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0" />
 								<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-radius: 10px; -fx-background-color: #ccc;">
 									<children>
+										<Label fx:id="pageInfoLabel" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
 										<Button mnemonicParsing="false" text="Imprimir" onAction="#handlePrintAction" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
-										<Button mnemonicParsing="false" text="Carregar Jogos" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+										<Button mnemonicParsing="false" text="Carregar Jogos" onAction="#handleLoadGamesAction" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
 									</children>
 									<HBox.margin>
 										<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
