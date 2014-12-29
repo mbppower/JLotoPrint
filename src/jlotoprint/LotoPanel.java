@@ -18,6 +18,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -47,7 +48,7 @@ public class LotoPanel extends Pane {
 
 	public Rectangle createRect(final MarkInfo m) {
 		Rectangle rec = new Rectangle();
-		rec.setFill(isEditEnabled ? Color.BLUE : Color.TRANSPARENT);
+		rec.setFill(isEditEnabled ? (m.getType().equals("numberCount") ? Color.RED : Color.BLUE) : Color.TRANSPARENT);
 		rec.setId(m.getId());
 		rec.setTranslateX(m.getX());
 		rec.setTranslateY(m.getY());
@@ -114,19 +115,28 @@ public class LotoPanel extends Pane {
 		String id = UUID.randomUUID().toString();
 		MarkInfo m = new MarkInfo(id, groupName, type, toggleValue, 0, 0, 16, 10);
 		createRect(m);
-		if (model.getGroupMap().get(m.getGroup()) == null) {
-			model.getGroupMap().put(m.getGroup(), new ArrayList());
+		
+		if(type.equals("numberCount")){
+			model.getNumberCountMap().add(m);
 		}
-		model.getGroupMap().get(m.getGroup()).add(m);
+		else{
+			if (model.getGroupMap().get(m.getGroup()) == null) {
+				model.getGroupMap().put(m.getGroup(), new ArrayList());
+			}
+			model.getGroupMap().get(m.getGroup()).add(m);
+		}
 		getChildren().add(m.getRec());
 	}
 
 	public void createMarkFromInfo(HashMap<String, ArrayList<MarkInfo>> map) {
 		for (Entry<String, ArrayList<MarkInfo>> list : map.entrySet()) {
-			for (MarkInfo m : list.getValue()) {
-				createRect(m);
-				getChildren().add(m.getRec());
-			}
+			createMarkFromInfo(list.getValue());
+		}
+	}
+	public void createMarkFromInfo(ArrayList<MarkInfo> markList) {
+		for (MarkInfo m : markList) {
+			createRect(m);
+			getChildren().add(m.getRec());
 		}
 	}
 
@@ -135,15 +145,33 @@ public class LotoPanel extends Pane {
 		return g.toJson(model);
 	}
 
-	void render(ArrayList<String[]> data) {
+	void render(ArrayList<String[]> data) throws Exception {
+		Boolean isValid = true;
+		int size = 0;
 		int i = 0;
+		groupMap:
 		for (ArrayList<MarkInfo> group : model.getGroupMap().values()) {
 			for (MarkInfo m : group) {
 				if (i < data.size()) {
-					m.render(data.get(i));
+					if(i > 0 && data.get(i).length != data.get(i - 1).length){
+						isValid = false;
+						break groupMap;
+					}
+					else{
+						size = data.get(i).length;
+						m.render(data.get(i));
+					}
 				}
 			}
 			i++;
+		}
+		if(!isValid){
+			throw new Exception("Numbers has diferent sizes.");
+		}
+		else{
+			for (MarkInfo m : model.getNumberCountMap()) {
+				m.render(size);
+			}
 		}
 	}
 
@@ -153,8 +181,15 @@ public class LotoPanel extends Pane {
 			IOUtils.copy(getClass().getResourceAsStream("resources/defaultModel.json"), writer, "UTF-8");
 			Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			model = g.fromJson(writer.toString(), Model.class);
+			
+			System.out.println("-----------------" + model.getNumberCountMap().toArray().length);
+			
 			createMarkFromInfo(model.getGroupMap());
-		} catch (Exception e) {
+			
+			System.out.println("-----------------" + model.getNumberCountMap().toArray().length);
+			createMarkFromInfo(model.getNumberCountMap());
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

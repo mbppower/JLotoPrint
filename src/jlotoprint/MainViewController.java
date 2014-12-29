@@ -35,6 +35,10 @@ public class MainViewController implements Initializable {
 	public Pane printViewUIPanel;
 	@FXML
 	public ComboBox groupCombo;
+	
+	@FXML
+	public ComboBox typeCombo;
+	
 	@FXML
 	public TextField markValue;
 	
@@ -48,7 +52,8 @@ public class MainViewController implements Initializable {
 	@FXML
 	private void handleAddItemAction(ActionEvent event) {
 		String groupName = groupCombo.getValue().toString();
-		lotoPanel.createMark(groupName, "option", markValue.getText());
+		String typeName = typeCombo.getValue().toString();
+		lotoPanel.createMark(groupName, typeName, markValue.getText());
 	}
 	
 	@FXML
@@ -76,6 +81,13 @@ public class MainViewController implements Initializable {
 			"Group_2"
 		));
 		groupCombo.setValue(groupCombo.getItems().get(0));
+		
+		typeCombo.setItems(FXCollections.observableArrayList(
+			"option",
+			"numberCount"
+		));
+		typeCombo.setValue(typeCombo.getItems().get(0));
+		
 		zoomBar.setValue(ZOOM);
 		zoomBar.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override

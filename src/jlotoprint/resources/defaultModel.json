@@ -509,7 +509,44 @@
 						"width": 16.0,
 						"height": 10.0
 					}
-				]
+				],
+				"numberCountMap": [{
+						"id": "72e0b34b-2dbc-4443-a2db-6e99894ccaf9",
+						"toggleValue": "15",
+						"group": "Group_1",
+						"type": "numberCount",
+						"x": 98.0,
+						"y": 602.0,
+						"width": 16.0,
+						"height": 10.0
+					}, {
+						"id": "8e2e372a-abf9-4db0-883a-445961030e2f",
+						"toggleValue": "16",
+						"group": "Group_1",
+						"type": "numberCount",
+						"x": 196.0,
+						"y": 603.0,
+						"width": 16.0,
+						"height": 10.0
+					}, {
+						"id": "d4ecf452-abda-4ae1-9054-6b682cd819b2",
+						"toggleValue": "17",
+						"group": "Group_1",
+						"type": "numberCount",
+						"x": 298.0,
+						"y": 603.0,
+						"width": 16.0,
+						"height": 10.0
+					}, {
+						"id": "ac8d884c-27b2-4641-9284-1e89a6975d29",
+						"toggleValue": "18",
+						"group": "Group_1",
+						"type": "numberCount",
+						"x": 401.0,
+						"y": 604.0,
+						"width": 16.0,
+						"height": 10.0
+					}]
 			}
 }
 	

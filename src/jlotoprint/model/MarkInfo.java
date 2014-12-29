@@ -58,7 +58,16 @@ public class MarkInfo {
 			}
 		}
 	}
-
+	
+	public void render(int size) {
+		
+		System.out.println(size +"---------"+ Integer.parseInt(toggleValue));
+		
+		if(size == Integer.parseInt(toggleValue)){
+			toggle();
+		}
+	}
+	
 	public String getId() {
 		return id;
 	}

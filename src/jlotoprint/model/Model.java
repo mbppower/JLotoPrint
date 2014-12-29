@@ -30,6 +30,9 @@ public class Model {
 	@Expose
 	public HashMap<String, ArrayList<MarkInfo>> groupMap = new HashMap<>();
 
+	@Expose
+	public ArrayList<MarkInfo> numberCountMap = new ArrayList<>();
+
 	public String getImage() {
 		return image;
 	}
@@ -78,7 +81,16 @@ public class Model {
 		this.dpi = dpi;
 	}
 
+	public ArrayList<MarkInfo> getNumberCountMap() {
+		return numberCountMap;
+	}
+
+	public void setNumberCountMap(ArrayList<MarkInfo> numberCountMap) {
+		this.numberCountMap = numberCountMap;
+	}
+
 	public Model() {
 
 	}
+
 }

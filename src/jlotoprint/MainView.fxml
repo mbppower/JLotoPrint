@@ -9,6 +9,11 @@
 		<Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
 		<TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns:fx="http://javafx.com/fxml">
 			<tabs>
+				<Tab text="Impressão">
+					<content>
+						<fx:include fx:id="printViewUIPanel" source="PrintViewUIPanel.fxml" />
+					</content>
+				</Tab>
 				<Tab text="Editor">
 					<content>
 						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -36,7 +41,7 @@
 														<Button fx:id="button" layoutX="30.0" layoutY="66.0" onAction="#handleLoadModelAction" text="Carregar Modelo" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" />
 														<Button layoutX="30.0" layoutY="27.0" onAction="#handleAddItemAction" text="Adicionar Marcador" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" />
 														<Button layoutX="30.0" layoutY="102.0" onAction="#handleSaveModelAction" text="Salvar Modelo" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
-														<ComboBox fx:id="groupCombo" layoutX="30.0" layoutY="142.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" xmlns:fx="http://javafx.com/fxml" />
+														<ComboBox fx:id="groupCombo" layoutX="30.0" layoutY="142.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" xmlns:fx="http://javafx.com/fxml" /><ComboBox fx:id="typeCombo" layoutX="30.0" layoutY="142.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
 														<TextField fx:id="markValue" maxWidth="50.0" prefHeight="25.0" prefWidth="50.0" />
 													</children>
 												</VBox>
@@ -46,11 +51,6 @@
 								</SplitPane>
 							</children>
 						</AnchorPane>
-					</content>
-				</Tab>
-				<Tab text="Impressão">
-					<content>
-						<fx:include fx:id="printViewUIPanel" source="PrintViewUIPanel.fxml" />
 					</content>
 				</Tab>
 			</tabs>
