@@ -9,11 +9,15 @@ import jlotoprint.model.Model;
 import jlotoprint.model.MarkInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.Console;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -34,7 +38,32 @@ public class LotoPanel extends Pane {
 	private double originY;
 	public Boolean isEditEnabled = true;
 	public Model model = new Model();
-
+	
+	
+	//BEGIN selection value
+	public ObjectProperty<MarkInfo> selectionProperty() { return selection; }
+    private ObjectProperty<MarkInfo> selection = new SimpleObjectProperty<MarkInfo>(this, "selection") {
+        MarkInfo oldValue;
+        
+        @Override protected void invalidated() {
+            super.invalidated();
+            MarkInfo newValue = get();
+            
+            if ((oldValue == null && newValue != null) ||
+                    oldValue != null && ! oldValue.equals(newValue)) {
+                valueInvalidated();
+            }
+            
+            oldValue = newValue;
+        }
+    };
+    public final void setSelection(MarkInfo value) { selectionProperty().set(value); }
+    public final MarkInfo getSelection() { return selectionProperty().get(); }
+	void valueInvalidated() {
+        fireEvent(new ActionEvent());
+    }
+	//END selection value
+	
 	public LotoPanel(Boolean isEditEnabled) {
 		this.isEditEnabled = isEditEnabled;
 		double w = model.getImageWidth();
@@ -45,10 +74,11 @@ public class LotoPanel extends Pane {
 		setMinSize(w, h);
 		setMaxSize(w, h);
 	}
-
+	
 	public Rectangle createRect(final MarkInfo m) {
 		Rectangle rec = new Rectangle();
-		rec.setFill(isEditEnabled ? (m.getType().equals("numberCount") ? Color.RED : Color.BLUE) : Color.TRANSPARENT);
+		
+		rec.setFill(isEditEnabled ? (m.getType().equals("numberCount") ? Color.RED : m.getColor()) : Color.TRANSPARENT);
 		rec.setId(m.getId());
 		rec.setTranslateX(m.getX());
 		rec.setTranslateY(m.getY());
@@ -68,6 +98,9 @@ public class LotoPanel extends Pane {
 								}
 							}
 						}
+					}
+					else{
+						setSelection(m);
 					}
 				}
 			});
@@ -110,7 +143,9 @@ public class LotoPanel extends Pane {
 		m.setRec(rec);
 		return rec;
 	}
-
+	public void onShowProperties(final MarkInfo m){
+		
+	}
 	public void createMark(String groupName, String type, String toggleValue) {
 		String id = UUID.randomUUID().toString();
 		MarkInfo m = new MarkInfo(id, groupName, type, toggleValue, 0, 0, 16, 10);
@@ -182,11 +217,11 @@ public class LotoPanel extends Pane {
 			Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			model = g.fromJson(writer.toString(), Model.class);
 			
-			System.out.println("-----------------" + model.getNumberCountMap().toArray().length);
+			System.out.println("-----------------NumberCount:" + model.getNumberCountMap().toArray().length);
 			
 			createMarkFromInfo(model.getGroupMap());
 			
-			System.out.println("-----------------" + model.getNumberCountMap().toArray().length);
+			System.out.println("-----------------NumberCount:" + model.getNumberCountMap().toArray().length);
 			createMarkFromInfo(model.getNumberCountMap());
 		} 
 		catch (Exception e) {

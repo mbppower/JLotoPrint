@@ -6,20 +6,32 @@
 
 package jlotoprint;
 
+import com.sun.glass.ui.Application;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
+import jlotoprint.model.MarkInfo;
 
 /**
  *
@@ -30,11 +42,14 @@ public class MainViewController implements Initializable {
 	@FXML
 	public Label label;
 	@FXML
-	public Pane imageContainer;
+	public GridPane imageContainer;
 	@FXML
 	public Pane printViewUIPanel;
 	@FXML
 	public ComboBox groupCombo;
+	
+	@FXML
+	public TextField currentSelection;
 	
 	@FXML
 	public ComboBox typeCombo;
@@ -58,7 +73,22 @@ public class MainViewController implements Initializable {
 	
 	@FXML
 	private void handleSaveModelAction(ActionEvent event) {
-		System.out.print(lotoPanel.getJsonModel());
+		FileChooser fileChooser = new FileChooser();
+		FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("JLotoPrint Model (*.json)", "*.json");
+		fileChooser.getExtensionFilters().add(extensionFilter);
+
+		//Show save file dialog
+		File file = fileChooser.showSaveDialog(JLotoPrint.stage);
+		if(file != null){
+			try {
+				FileWriter fileWriter = new FileWriter(file);
+				fileWriter.write(lotoPanel.getJsonModel());
+				fileWriter.close();
+			}
+			catch (IOException ex) {
+				Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 
 	@FXML
@@ -68,14 +98,6 @@ public class MainViewController implements Initializable {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		lotoPanel = new LotoPanel(true);
-		imageContainer.getChildren().add(lotoPanel);
-		imageContainer.setScaleX(ZOOM);
-		imageContainer.setScaleY(ZOOM);
-		
-		AnchorPane.setTopAnchor(lotoPanel, 10.0);
-		AnchorPane.setLeftAnchor(lotoPanel, 10.0);
-		
 		groupCombo.setItems(FXCollections.observableArrayList(
 			"Group_1",
 			"Group_2"
@@ -97,6 +119,52 @@ public class MainViewController implements Initializable {
 				imageContainer.setScaleY(ZOOM);
 			}
 		});
+		
+		groupCombo.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				MarkInfo m = lotoPanel.getSelection();
+				if(m != null){
+					m.setGroup(newValue);
+				}
+			}
+		});
+		typeCombo.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				MarkInfo m = lotoPanel.getSelection();
+				if(m != null){
+					m.setType(newValue);
+				}
+			}
+		});
+		markValue.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				MarkInfo m = lotoPanel.getSelection();
+				if(m != null){
+					m.setToggleValue(newValue);
+				}
+			}
+		});
+				
+		lotoPanel = new LotoPanel(true);
+		lotoPanel.selectionProperty().addListener(new ChangeListener<MarkInfo>() {
+			@Override
+			public void changed(ObservableValue<? extends MarkInfo> observable, MarkInfo oldValue, MarkInfo newValue) {
+				if(newValue != null){
+					currentSelection.setText(newValue.getId());
+					groupCombo.setValue(newValue.getGroup());
+					typeCombo.setValue(newValue.getType());
+					markValue.setText(newValue.getToggleValue());
+				}
+			}
+		});
+		imageContainer.setAlignment(Pos.CENTER);
+		imageContainer.add(lotoPanel, 0, 0);
+		GridPane.setHalignment(lotoPanel, HPos.CENTER);
+		GridPane.setValignment(lotoPanel, VPos.CENTER);
+		imageContainer.setScaleX(ZOOM);
+		imageContainer.setScaleY(ZOOM);
 	}
-
 }

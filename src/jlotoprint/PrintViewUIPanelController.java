@@ -20,9 +20,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
@@ -37,10 +39,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
@@ -53,9 +58,10 @@ public class PrintViewUIPanelController implements Initializable {
 
 	private List<Pane> pageList = new ArrayList<>();
 	private int currentPage = -1;
+	private Pagination pagination;
 	
 	@FXML
-	public Pagination pagination;			
+	public AnchorPane paginationContainer;			
 
 	@FXML
 	public GridPane gridContainer;
@@ -65,18 +71,6 @@ public class PrintViewUIPanelController implements Initializable {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-	
-		pagination.setPageFactory(new Callback<Integer, Node>() {
-			@Override
-			public Node call(Integer pageIndex) {
-				if (pageIndex >= pageList.size()) {
-					return null;
-				}
-				else {
-					return createPage(pageIndex);
-				}
-			}
-		});
 	}
 
 	public List<String> readTextFileAsList(File file) {
@@ -103,6 +97,7 @@ public class PrintViewUIPanelController implements Initializable {
 		File sourceFile = fileChooser.showOpenDialog(JLotoPrint.stage.getOwner());
 
 		if (sourceFile != null) {
+
 			List<String> lines = readTextFileAsList(sourceFile);
 			int groupCount = 2;
 			int count = 0;
@@ -113,7 +108,7 @@ public class PrintViewUIPanelController implements Initializable {
 					data = new ArrayList<>();
 					groupDataList.add(data);
 				}
-				data.add(line.split(" - "));
+				data.add(line.split("-"));
 				count++;
 			}
 
@@ -122,9 +117,7 @@ public class PrintViewUIPanelController implements Initializable {
 			int currentCol = 0;
 			int currentRow = 0;
 
-			//GridPane gridContainer = new GridPane();
-			
-			TilePane container = new TilePane(rowCount, colCount);
+			GridPane container = new GridPane();
 			
 			pageList = new ArrayList<>();
 			pageList.add(getNewPage(container));
@@ -137,7 +130,7 @@ public class PrintViewUIPanelController implements Initializable {
 					currentCol = 0;
 					if (currentRow > rowCount) {
 						currentRow = 0;
-						container = new TilePane(rowCount, colCount);
+						container = new GridPane();
 						System.out.println("---------------- new page");
 						pageList.add(getNewPage(container));
 					}
@@ -146,34 +139,76 @@ public class PrintViewUIPanelController implements Initializable {
 				lotoPanel.importMarks();
 				
 				lotoPanel.render(groupData);
-				container.getChildren().add(lotoPanel);
+				container.add(lotoPanel, currentCol, currentRow);
 				
 				System.out.println("groupData: " + groupData.size() + " width: " + container.getBoundsInLocal().getWidth());
 				
 				currentCol++;
 			}
-			pagination.setPageCount(pageList.size());
-			pagination.setCurrentPageIndex(0);
+			
+			//clear previous content
+			paginationContainer.getChildren().clear();
+			pagination = null;
+			
+			//create pagination component
+			pagination = new Pagination(pageList.size(), 0);
+			pagination.setPageFactory(new Callback<Integer, Node>() {
+				@Override
+				public Node call(Integer pageIndex) {
+					if (pageIndex >= pageList.size()) {
+						return null;
+					}
+					else {
+						return createPage(pageIndex);
+					}
+				}
+			});
+
+			AnchorPane.setTopAnchor(pagination, 0.0);
+			AnchorPane.setLeftAnchor(pagination, 0.0);
+			AnchorPane.setRightAnchor(pagination, 0.0);
+			AnchorPane.setBottomAnchor(pagination, 0.0);
+			paginationContainer.getChildren().add(pagination);
 		}
 	}
 	private Pane createPage(Integer pageIndex) {	
-		//HBox pageContainer = new HBox();
+
 		Pane page = pageList.get(pageIndex);
-		page.setScaleX(.2);
-		page.setScaleY(.2);
-		//HashMap<String, Double> result = resizeProportional(page.getBoundsInLocal().getWidth(), page.getBoundsInLocal().getHeight(), pagination.getBoundsInLocal().getWidth(), pagination.getBoundsInLocal().getHeight(), true);
-		//page.getTransforms().clear();
-		//page.getTransforms().add(new Scale(result.get("scaleX"), result.get("scaleY")));
-		return page;
+		
+		
+		double pageWidth = page.getWidth();
+		double pageHeight = page.getHeight();
+		double margin = 60.0;
+		
+		HashMap<String, Double> result = resizeProportional(pageWidth, pageHeight, pagination.getWidth() - margin, pagination.getHeight() - margin, true);
+		
+		System.out.println("w: " + (pageWidth * result.get("scaleX")));
+		System.out.println("h: " + (pageHeight * result.get("scaleY")));
+		
+		page.setScaleX(result.get("scaleX"));
+		page.setScaleY(result.get("scaleY"));
+		
+		//center page
+		GridPane.setHgrow(page, Priority.NEVER);
+		GridPane.setVgrow(page, Priority.NEVER);
+		
+		GridPane centerGrid = new GridPane();
+		centerGrid.setAlignment(Pos.TOP_CENTER);
+		centerGrid.add(page, 0, 0);
+	
+		return centerGrid;
 	}
 	
-	private Pane getNewPage(Pane container) {
-		//Node page = new Shape();
+	private Pane getNewPage(GridPane container) {
+		container.setStyle("-fx-background-color: blue; -fx-border-width: 2px; -fx-border-color:orange;");
+		
 		//A4 paper size
 		//-fx-min-width:210mm; -fx-min-height:297mm;
-		container.setStyle("-fx-background-color: red; -fx-border-width: 1px; -fx-border-color:black;");
+		container.setMinHeight(2200.0);
 		container.setMinWidth(1300.0);
-		container.setMaxWidth(1300.0);
+		container.setGridLinesVisible(true);
+		container.setAlignment(Pos.TOP_LEFT);
+
 		return container;
 	}
 		
@@ -181,7 +216,8 @@ public class PrintViewUIPanelController implements Initializable {
 	private void handleLoadGamesAction(ActionEvent event) {
 		try {
 			renderLotoPanel();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			Logger.getLogger(PrintViewUIPanelController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
@@ -194,8 +230,8 @@ public class PrintViewUIPanelController implements Initializable {
 	public void print() {
 
 		Printer printer = Printer.getDefaultPrinter();
-		double margin = 10.0;
-		PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.PORTRAIT, margin, margin, margin, margin);
+		double margin = 20.0;
+		PageLayout pageLayout = printer.createPageLayout(Paper.A4, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
 		
 		PrinterJob job = PrinterJob.createPrinterJob();
 		PrintResolution resolution = job.getJobSettings().getPrintResolution();
@@ -210,12 +246,16 @@ public class PrintViewUIPanelController implements Initializable {
 					System.out.println(pageLayout.getPrintableWidth());
 					System.out.println(pageLayout.getPrintableHeight());
 					
-					HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageLayout.getPrintableWidth(), pageLayout.getPrintableHeight(), true);
+					System.out.println(pageLayout.getLeftMargin() + pageLayout.getRightMargin());
+					System.out.println(pageLayout.getTopMargin() + pageLayout.getBottomMargin());
+
+					HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageLayout.getPrintableWidth() , pageLayout.getPrintableHeight(), true);
+					
 					node.setScaleX(1);
 					node.setScaleY(1);
-					//node.getTransforms().add(new Scale(result.get("scaleX"), result.get("scaleY")));
+					node.getTransforms().add(new Translate(0.0, 0.0));
+					node.getTransforms().add(new Scale(result.get("scaleX"), result.get("scaleY")));
 					
-					node.getTransforms().add(new Scale(.3, .3));
 					job.printPage(node);
 					node.getTransforms().clear();
 				}
@@ -229,11 +269,14 @@ public class PrintViewUIPanelController implements Initializable {
 		}
 	}
 	
-	public HashMap<String, Double> resizeProportional(double ow, double oh, double w, double h, Boolean dontResizeWhenSmall) {
+	public HashMap<String, Double> resizeProportional(double ow, double oh, double w, double h, Boolean dontResizeWhenSmaller) {
+		
+		System.out.println(ow + ", " + oh + "," + w + ", " + h);
+		
 		HashMap<String, Double> result = new HashMap<>();
 		double ph = w * oh / ow, pw = h * ow / oh;
 		//dont resize
-		if((ow < w && oh < h) && dontResizeWhenSmall) {
+		if((ow < w && oh < h) && dontResizeWhenSmaller) {
 			result.put("width", ow);
 			result.put("height", oh);
 			result.put("scaleX", 1.0);

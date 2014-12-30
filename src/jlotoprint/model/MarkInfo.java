@@ -6,6 +6,7 @@
 package jlotoprint.model;
 
 import com.google.gson.annotations.Expose;
+import java.util.Random;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -43,17 +44,26 @@ public class MarkInfo {
 		this.width = width;
 		this.height = height;
 	}
-
+	
 	void toggle() {
 		if(rec != null){
 			rec.setFill(Color.BLACK);
 		}
 	}
-
+	
+	public Color getColor(){
+		Random rand = new Random();
+		int r = rand.nextInt(255);
+		int g = rand.nextInt(255);
+		int b = rand.nextInt(255);
+		Color color = Color.rgb(r,g,b);
+		return color;
+	}
+	
 	public void render(String[] n) {
 		for(String v : n){
+			System.out.println("v: " + v + " - " + toggleValue);
 			if(v.equals(toggleValue)){
-				//System.out.println("v: " + v + " - " + toggleValue);
 				toggle();
 			}
 		}
@@ -61,7 +71,7 @@ public class MarkInfo {
 	
 	public void render(int size) {
 		
-		System.out.println(size +"---------"+ Integer.parseInt(toggleValue));
+		System.out.println("size:" + size + ", toggleValue:" + Integer.parseInt(toggleValue));
 		
 		if(size == Integer.parseInt(toggleValue)){
 			toggle();
