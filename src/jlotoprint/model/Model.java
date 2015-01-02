@@ -17,9 +17,9 @@ import jlotoprint.model.MarkInfo;
 public class Model {
 
 	@Expose
-	private String image = "/jlotoprint/resources/lotofacil.png";
+	private String image = "lotofacil.png";
 	@Expose
-	private String imagePreview = "/jlotoprint/resources/lotofacil-preview.png";
+	private String imagePreview = "lotofacil-preview.png";
 	@Expose
 	private double imageWidth = 644;
 	@Expose

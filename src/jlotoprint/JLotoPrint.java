@@ -10,7 +10,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import jlotoprint.model.Template;
 
 /**
  *
@@ -22,10 +24,15 @@ public class JLotoPrint extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		//INIT CONFIG
+		Template.setTemplateDir("resources/templates/");
+		//END CONFIG
+		
 		Parent root = FXMLLoader.load(getClass().getResource("MainView.fxml"));
 		JLotoPrint.root = root;
 		Scene scene = new Scene(root);
-		
+		stage.setTitle("JLotoPrint");
+		stage.getIcons().add(new Image("file:resources/icon.png"));
 		stage.setScene(scene);
 		stage.show();
 		this.stage = stage;

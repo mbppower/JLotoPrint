@@ -1,6 +1,6 @@
 {
-	"image": "/jlotoprint/resources/lotofacil.png",
-	"imagePreview": "/jlotoprint/resources/lotofacil-preview.png",
+	"image": "lotofacil.png",
+	"imagePreview": "lotofacil-preview.png",
 	"imageWidth": 644.0,
 	"imageHeight": 1095.0,
 	"dpi": 200,

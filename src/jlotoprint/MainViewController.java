@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package jlotoprint;
 
 import com.sun.glass.ui.Application;
@@ -18,11 +17,18 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
@@ -31,6 +37,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import jlotoprint.model.MarkInfo;
 
 /**
@@ -38,7 +46,7 @@ import jlotoprint.model.MarkInfo;
  * @author Marcel.Barbosa
  */
 public class MainViewController implements Initializable {
-	
+
 	@FXML
 	public Label label;
 	@FXML
@@ -47,69 +55,103 @@ public class MainViewController implements Initializable {
 	public Pane printViewUIPanel;
 	@FXML
 	public ComboBox groupCombo;
-	
+
 	@FXML
 	public TextField currentSelection;
-	
+
 	@FXML
 	public ComboBox typeCombo;
-	
+
 	@FXML
 	public TextField markValue;
-	
+
 	@FXML
 	public Slider zoomBar;
-	
+
 	public static double ZOOM = .5;
-	
+
 	LotoPanel lotoPanel;
-	
+
 	@FXML
 	private void handleAddItemAction(ActionEvent event) {
 		String groupName = groupCombo.getValue().toString();
 		String typeName = typeCombo.getValue().toString();
 		lotoPanel.createMark(groupName, typeName, markValue.getText());
 	}
-	
+
+	@FXML
+	private void handleOpenTemplateAction(ActionEvent event) {
+		//show dialog
+		try {
+			final Stage stage = new Stage();
+			FXMLLoader dialog = new FXMLLoader(getClass().getResource("TemplateDialog.fxml"));
+			Parent root = (Parent)dialog.load();          
+			TemplateDialogController dialogController = dialog.<TemplateDialogController>getController();
+			
+			root.addEventHandler(TemplateDialogEvent.CANCELED, (actionEvent) -> {
+				stage.close();
+			});
+			
+			root.addEventHandler(TemplateDialogEvent.SELECTED, (actionEvent) -> {
+				stage.close();
+				loadPanel();
+			});
+			
+			stage.setScene(new Scene(root));
+			stage.setTitle("Choose a template");
+			stage.initModality(Modality.WINDOW_MODAL);
+			stage.initOwner(JLotoPrint.stage.getScene().getWindow());
+			stage.show();
+		}
+		catch (IOException ex) {
+			Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
 	@FXML
 	private void handleSaveModelAction(ActionEvent event) {
-		FileChooser fileChooser = new FileChooser();
-		FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("JLotoPrint Model (*.json)", "*.json");
-		fileChooser.getExtensionFilters().add(extensionFilter);
+		if(lotoPanel != null){
+			FileChooser fileChooser = new FileChooser();
+			FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("JLotoPrint Model (*.json)", "*.json");
+			fileChooser.getExtensionFilters().add(extensionFilter);
 
-		//Show save file dialog
-		File file = fileChooser.showSaveDialog(JLotoPrint.stage);
-		if(file != null){
-			try {
-				FileWriter fileWriter = new FileWriter(file);
-				fileWriter.write(lotoPanel.getJsonModel());
-				fileWriter.close();
-			}
-			catch (IOException ex) {
-				Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
+			//Show save file dialog
+			File file = fileChooser.showSaveDialog(JLotoPrint.stage);
+			if (file != null) {
+				try {
+					FileWriter fileWriter = new FileWriter(file);
+					fileWriter.write(lotoPanel.getJsonModel());
+					fileWriter.close();
+				} catch (IOException ex) {
+					Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
+				}
 			}
 		}
 	}
 
 	@FXML
 	private void handleLoadModelAction(ActionEvent event) {
-		lotoPanel.importMarks();		
+		lotoPanel.importMarks();
 	}
-	
+
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+		
+	}
+	
+	public void loadPanel(){
 		groupCombo.setItems(FXCollections.observableArrayList(
-			"Group_1",
-			"Group_2"
+				"Group_1",
+				"Group_2"
 		));
 		groupCombo.setValue(groupCombo.getItems().get(0));
-		
+
 		typeCombo.setItems(FXCollections.observableArrayList(
-			"option",
-			"numberCount"
+				"option",
+				"numberCount"
 		));
 		typeCombo.setValue(typeCombo.getItems().get(0));
-		
+
 		zoomBar.setValue(ZOOM);
 		zoomBar.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -119,12 +161,12 @@ public class MainViewController implements Initializable {
 				imageContainer.setScaleY(ZOOM);
 			}
 		});
-		
+
 		groupCombo.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				MarkInfo m = lotoPanel.getSelection();
-				if(m != null){
+				if (m != null) {
 					m.setGroup(newValue);
 				}
 			}
@@ -133,7 +175,7 @@ public class MainViewController implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				MarkInfo m = lotoPanel.getSelection();
-				if(m != null){
+				if (m != null) {
 					m.setType(newValue);
 				}
 			}
@@ -142,17 +184,17 @@ public class MainViewController implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				MarkInfo m = lotoPanel.getSelection();
-				if(m != null){
+				if (m != null) {
 					m.setToggleValue(newValue);
 				}
 			}
 		});
-				
+
 		lotoPanel = new LotoPanel(true);
 		lotoPanel.selectionProperty().addListener(new ChangeListener<MarkInfo>() {
 			@Override
 			public void changed(ObservableValue<? extends MarkInfo> observable, MarkInfo oldValue, MarkInfo newValue) {
-				if(newValue != null){
+				if (newValue != null) {
 					currentSelection.setText(newValue.getId());
 					groupCombo.setValue(newValue.getGroup());
 					typeCombo.setValue(newValue.getType());

@@ -10,6 +10,8 @@ import jlotoprint.model.MarkInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.Console;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,10 +24,10 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import jlotoprint.model.Template;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -69,7 +71,8 @@ public class LotoPanel extends Pane {
 		double w = model.getImageWidth();
 		double h = model.getImageHeight();
 		String size = w + "px " + h + "px";
-		String image = isEditEnabled ? model.getImagePreview() : model.getImage();
+		String image = "file:" + Template.getTemplateDir() + Template.getTemplateFile().getParentFile().getName() + "/" + (isEditEnabled ? model.getImagePreview() : model.getImage());
+		System.out.println(image);
 		setStyle("-fx-border-color:red; -fx-background-color: #00ffaa; -fx-background-repeat: no-repeat; -fx-background-image: url(\"" + image + "\"); -fx-background-size:contain");
 		setMinSize(w, h);
 		setMaxSize(w, h);
@@ -213,7 +216,9 @@ public class LotoPanel extends Pane {
 	public void importMarks() {
 		try {
 			StringWriter writer = new StringWriter();
-			IOUtils.copy(getClass().getResourceAsStream("resources/defaultModel.json"), writer, "UTF-8");
+			File template = Template.getTemplateFile();
+			
+			IOUtils.copy(new FileInputStream(template), writer, "UTF-8");
 			Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 			model = g.fromJson(writer.toString(), Model.class);
 			
