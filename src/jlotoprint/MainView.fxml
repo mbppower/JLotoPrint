@@ -36,7 +36,6 @@
 									<children>
 										<ToolBar prefWidth="200.0" xmlns:fx="http://javafx.com/fxml">
 											<items>
-												<Button mnemonicParsing="false" onAction="#handleLoadModelAction" text="Carregar Modelo" />
 												<Button mnemonicParsing="false" onAction="#handleSaveModelAction" text="Salvar Modelo" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
 											</items>
 										</ToolBar>
@@ -95,6 +94,26 @@
 																<TextField fx:id="currentSelection" editable="false" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" />
 															</children>
 														</GridPane>
+                                                <GridPane>
+                                                   <children>
+                                                      <TextField fx:id="templateImage" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <Label text="Image" GridPane.rowIndex="1" />
+                                                      <Label text="Name" />
+                                                      <TextField fx:id="templateName" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" />
+                                                      <Label text="Image Preview" GridPane.rowIndex="2" />
+                                                      <TextField fx:id="templateImagePreview" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                   </children>
+                                                   <columnConstraints>
+                                                      <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="64.0" minWidth="10.0" prefWidth="45.0" />
+                                                      <ColumnConstraints hgrow="ALWAYS" maxWidth="90.0" minWidth="10.0" prefWidth="90.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                </GridPane>
 													</children>
 													<padding>
 														<Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />

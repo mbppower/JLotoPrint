@@ -3,18 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/TemplateDialogController.java</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/TemplateDialog.fxml</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/MainView.fxml</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/PrintViewUIPanel.fxml</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/model/Model.java</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/LotoPanel.java</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/model/MarkInfo.java</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/TemplateDialogEvent.java</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/MainViewController.java</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/PrintViewUIPanelController.java</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/model/Template.java</file>
-            <file>file:/C:/server/github/JLotoPrint/src/jlotoprint/JLotoPrint.java</file>
+            <file>file:/Users/alice/GitHub/JLotoPrint/src/jlotoprint/PrintViewUIPanelController.java</file>
+            <file>file:/Users/alice/GitHub/JLotoPrint/src/jlotoprint/MainViewController.java</file>
+            <file>file:/Users/alice/GitHub/JLotoPrint/src/jlotoprint/LotoPanel.java</file>
+            <file>file:/Users/alice/GitHub/JLotoPrint/src/jlotoprint/TemplateDialogController.java</file>
         </group>
     </open-files>
 </project-private>

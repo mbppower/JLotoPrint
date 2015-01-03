@@ -40,6 +40,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jlotoprint.model.MarkInfo;
+import jlotoprint.model.Template;
 
 /**
  *
@@ -67,7 +68,13 @@ public class MainViewController implements Initializable {
 
 	@FXML
 	public Slider zoomBar;
-
+    @FXML
+    public TextField templateName;
+    @FXML
+    public TextField templateImage;
+    @FXML
+    public TextField templateImagePreview;
+    
 	public static double ZOOM = .5;
 
 	LotoPanel lotoPanel;
@@ -110,11 +117,12 @@ public class MainViewController implements Initializable {
 
 	@FXML
 	private void handleSaveModelAction(ActionEvent event) {
-		if(lotoPanel != null){
+        if(lotoPanel != null){
 			FileChooser fileChooser = new FileChooser();
 			FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("JLotoPrint Model (*.json)", "*.json");
 			fileChooser.getExtensionFilters().add(extensionFilter);
-
+            fileChooser.setInitialDirectory(Template.getTemplateFile() != null ? Template.getTemplateFile().getParentFile() : new File(Template.getTemplateDir()));
+            fileChooser.setInitialFileName("template");
 			//Show save file dialog
 			File file = fileChooser.showSaveDialog(JLotoPrint.stage);
 			if (file != null) {
@@ -127,11 +135,6 @@ public class MainViewController implements Initializable {
 				}
 			}
 		}
-	}
-
-	@FXML
-	private void handleLoadModelAction(ActionEvent event) {
-		lotoPanel.importMarks();
 	}
 
 	@Override
@@ -189,7 +192,7 @@ public class MainViewController implements Initializable {
 				}
 			}
 		});
-
+        
 		lotoPanel = new LotoPanel(true);
 		lotoPanel.selectionProperty().addListener(new ChangeListener<MarkInfo>() {
 			@Override
@@ -200,6 +203,28 @@ public class MainViewController implements Initializable {
 					typeCombo.setValue(newValue.getType());
 					markValue.setText(newValue.getToggleValue());
 				}
+			}
+		});
+        lotoPanel.importMarks();
+        templateName.setText(lotoPanel.model.getName());
+        templateName.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                lotoPanel.model.setName(newValue);
+			}
+		});
+        templateImage.setText(lotoPanel.model.getImage());
+        templateImage.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				lotoPanel.model.setImage(newValue);
+			}
+		});
+        templateImagePreview.setText(lotoPanel.model.getImagePreview());
+        templateImagePreview.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				lotoPanel.model.setImagePreview(newValue);
 			}
 		});
 		imageContainer.setAlignment(Pos.CENTER);

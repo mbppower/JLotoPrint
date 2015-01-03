@@ -7,7 +7,6 @@
 package jlotoprint;
 
 import com.sun.glass.ui.Application;
-import com.sun.javafx.accessible.providers.SelectionItemProvider;
 import com.sun.javafx.event.EventUtil;
 import java.io.File;
 import java.nio.file.Files;
@@ -44,6 +43,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -54,6 +55,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jlotoprint.model.MarkInfo;
+import jlotoprint.model.Model;
 import jlotoprint.model.Template;
 
 /**
@@ -68,6 +70,9 @@ public class TemplateDialogController implements Initializable {
 	
 	@FXML
 	public Button selectButton;
+    
+    @FXML
+	public ImageView previewImage;
 	
 	@FXML
 	ListView<String> templateList = new ListView<String>();
@@ -98,12 +103,12 @@ public class TemplateDialogController implements Initializable {
 		//get available templates
 		File templateDir = new File(Template.getTemplateDir());
 		for(String name : templateDir.list()){
-			File file = new File(Template.getTemplateDir() + "\\" + name);
+			File file = new File(Template.getTemplateDir() + "/" + name);
 			if (file.isDirectory()) {
-				File json = new File(file + "\\template.json");
-				if(json.exists()){
-					templates.add(json.getAbsolutePath());
-				}
+                            File json = new File(file + "/template.json");
+                            if(json.exists()){
+                                templates.add(json.getAbsolutePath());
+                            }
 			}
 		}
 		
@@ -121,7 +126,10 @@ public class TemplateDialogController implements Initializable {
 		templateList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         templateList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> ov, String old_val, String new_val) {
-				nameText.setText(new_val);
+				File template = new File(new_val);
+                Model model = Model.load(template);
+                previewImage.setImage(new Image("file:" + template.getParent() + "/" + model.getImagePreview()));
+                nameText.setText(model.getName());
             }
         });
 	}
@@ -130,8 +138,14 @@ public class TemplateDialogController implements Initializable {
         @Override
         public void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
-            if (item != null) {
-				Label label = new Label(item);
+            if (
+                item != null) {
+                
+                File template = new File(item);
+                Model model = Model.load(template);
+                
+				Label label = new Label(model.getName() != null ? model.getName() : item);
+                
 				setGraphic(label);
             }
         }

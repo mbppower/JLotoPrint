@@ -21,8 +21,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -39,6 +41,7 @@ public class LotoPanel extends Pane {
 	private double originX;
 	private double originY;
 	public Boolean isEditEnabled = true;
+    
 	public Model model = new Model();
 	
 	
@@ -214,23 +217,10 @@ public class LotoPanel extends Pane {
 	}
 
 	public void importMarks() {
-		try {
-			StringWriter writer = new StringWriter();
-			File template = Template.getTemplateFile();
-			
-			IOUtils.copy(new FileInputStream(template), writer, "UTF-8");
-			Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-			model = g.fromJson(writer.toString(), Model.class);
-			
-			System.out.println("-----------------NumberCount:" + model.getNumberCountMap().toArray().length);
-			
-			createMarkFromInfo(model.getGroupMap());
-			
-			System.out.println("-----------------NumberCount:" + model.getNumberCountMap().toArray().length);
-			createMarkFromInfo(model.getNumberCountMap());
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		model = Model.load(Template.getTemplateFile());
+        System.out.println("-----------------NumberCount:" + model.getNumberCountMap().toArray().length);
+		createMarkFromInfo(model.getGroupMap());
+		System.out.println("-----------------NumberCount:" + model.getNumberCountMap().toArray().length);
+        createMarkFromInfo(model.getNumberCountMap());
 	}
 }

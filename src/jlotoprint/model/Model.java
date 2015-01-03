@@ -5,17 +5,24 @@
  */
 package jlotoprint.model;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import jlotoprint.model.MarkInfo;
+import org.apache.commons.io.IOUtils;
 
 /**
  *
  * @author Marcel.Barbosa
  */
 public class Model {
-
+    @Expose
+	private String name;
 	@Expose
 	private String image = "lotofacil.png";
 	@Expose
@@ -33,6 +40,13 @@ public class Model {
 	@Expose
 	public ArrayList<MarkInfo> numberCountMap = new ArrayList<>();
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 	public String getImage() {
 		return image;
 	}
@@ -92,5 +106,17 @@ public class Model {
 	public Model() {
 
 	}
-
+    public  static Model load(File template){
+        Model model = null;
+        try {
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(new FileInputStream(template), writer, "UTF-8");
+			Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+			model = g.fromJson(writer.toString(), Model.class);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+        return model;
+    }
 }
