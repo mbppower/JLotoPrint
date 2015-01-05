@@ -44,4 +44,7 @@ public class Template {
 	public static void setBasePath(String basePath) {
 		Template.basePath = basePath;
 	}
+    public static boolean isLoaded(){
+        return Template.getTemplateFile() != null;
+    }
 }

@@ -71,14 +71,17 @@ public class TemplateDialogController implements Initializable {
 	@FXML
 	public Button selectButton;
     
-    @FXML
+        @FXML
 	public ImageView previewImage;
 	
 	@FXML
 	ListView<String> templateList = new ListView<String>();
 	 
 	@FXML
-	public TextField nameText;
+	public Label nameText;
+    
+        @FXML
+    	public Label officialSiteText;
 
 	@FXML
 	private void handleCancelAction(ActionEvent event) {
