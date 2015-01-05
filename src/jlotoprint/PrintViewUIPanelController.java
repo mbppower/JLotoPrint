@@ -5,10 +5,12 @@
  */
 package jlotoprint;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,19 +18,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
+import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
@@ -38,24 +36,25 @@ import javafx.print.PrinterJob;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
-import javafx.scene.input.KeyCode;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jlotoprint.model.Template;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 
 /**
  *
@@ -191,13 +190,13 @@ public class PrintViewUIPanelController implements Initializable {
 	private Pane createPage(Integer pageIndex) {	
         
 		Pane page = pageList.get(pageIndex);
-		page.layoutBoundsProperty().addListener((ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) -> {
-                double pageWidth = page.getLayoutBounds().getWidth();
-                double pageHeight = page.getLayoutBounds().getHeight();
-                double margin = 60.0;
-                HashMap<String, Double> result = resizeProportional(pageWidth, pageHeight, pagination.getBoundsInLocal().getWidth() - margin, pagination.getBoundsInLocal().getHeight() - margin, true);
-                page.setScaleX(result.get("scaleX"));
-                page.setScaleY(result.get("scaleY"));
+		page.needsLayoutProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            double pageWidth = page.getLayoutBounds().getWidth();
+            double pageHeight = page.getLayoutBounds().getHeight();
+            double margin = 60.0;
+            HashMap<String, Double> result = resizeProportional(pageWidth, pageHeight, pagination.getBoundsInLocal().getWidth() - margin, pagination.getBoundsInLocal().getHeight() - margin, true);
+            page.setScaleX(result.get("scaleX"));
+            page.setScaleY(result.get("scaleY"));
         });
 		
 		//center page
@@ -246,7 +245,12 @@ public class PrintViewUIPanelController implements Initializable {
 	private void handlePrintAction(ActionEvent event) {
 		print();
 	}
-
+    
+    @FXML
+	private void handleExportPDFAction(ActionEvent event) {
+		exportToPDF();
+	}
+    
 	public void print() {
 		Printer printer = Printer.getDefaultPrinter();
         if(printer == null){
@@ -261,16 +265,8 @@ public class PrintViewUIPanelController implements Initializable {
 
             if (job.showPrintDialog(JLotoPrint.stage.getOwner())) {
                 try {
-                    for (Node node : pageList) {			
+                    for (Pane node : pageList) {			
                         node.getTransforms().clear();
-
-                        System.out.println("node width: " + node.getBoundsInLocal().getWidth());
-                        System.out.println("node height: " + node.getBoundsInLocal().getHeight());
-                        System.out.println(pageLayout.getPrintableWidth());
-                        System.out.println(pageLayout.getPrintableHeight());
-
-                        System.out.println(pageLayout.getLeftMargin() + pageLayout.getRightMargin());
-                        System.out.println(pageLayout.getTopMargin() + pageLayout.getBottomMargin());
 
                         HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageLayout.getPrintableWidth() , pageLayout.getPrintableHeight(), true);
 
@@ -278,9 +274,10 @@ public class PrintViewUIPanelController implements Initializable {
                         node.setScaleY(1);
                         node.getTransforms().add(new Translate(0.0, 0.0));
                         node.getTransforms().add(new Scale(result.get("scaleX"), result.get("scaleY")));
-
+                            
                         job.printPage(node);
                         node.getTransforms().clear();
+                        node.requestLayout();
                     }
                 }
                 catch(Exception e){
@@ -294,8 +291,6 @@ public class PrintViewUIPanelController implements Initializable {
 	}
 	
 	public HashMap<String, Double> resizeProportional(double ow, double oh, double w, double h, Boolean dontResizeWhenSmaller) {
-		
-		System.out.println(ow + ", " + oh + "," + w + ", " + h);
 		
 		HashMap<String, Double> result = new HashMap<>();
 		double ph = w * oh / ow, pw = h * ow / oh;
@@ -323,4 +318,66 @@ public class PrintViewUIPanelController implements Initializable {
 		}
 		return result;
 	}
+    
+    public void exportToPDF(){
+        
+        FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Select a destination");
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF File", "*.pdf"));
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setInitialFileName("PDF Export");
+		File sourceFile = fileChooser.showSaveDialog(JLotoPrint.stage.getOwner());
+
+		if (sourceFile != null) {
+
+            PDDocument doc = null;
+            PDPage page = null;
+            PDPageContentStream content = null;
+
+            try {
+                doc = new PDDocument();
+                
+                for (Pane node : pageList) {	
+
+                    page = new PDPage();
+                    doc.addPage(page);
+                    
+                    PDRectangle mediaBox = page.getMediaBox();
+                    float pageWidth = mediaBox.getWidth();
+                    float pageHeight = mediaBox.getHeight();
+                    
+                    node.getTransforms().clear();
+                    HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageWidth , pageHeight, true);
+                    node.setScaleX(1);
+                    node.setScaleY(1);
+                    node.getTransforms().add(new Translate(0.0, 0.0));
+                    node.getTransforms().add(new Scale(result.get("scaleX"), result.get("scaleY")));
+                    
+                    //get node image
+                    WritableImage nodeImage = node.snapshot(null, null);
+                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(nodeImage, null);
+
+                    //set page content
+                    content = new PDPageContentStream(doc, page);
+                    content.drawImage(new PDJpeg(doc, bufferedImage), 100, 100);
+                    content.close();
+                    node.getTransforms().clear();
+                    node.requestLayout();
+                }
+                doc.save(sourceFile);
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+            }
+            finally {
+                try {
+                    if (content != null) { content.close(); }
+                    if (doc != null) { doc.close(); }
+                }
+                catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
 }

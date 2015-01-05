@@ -62,7 +62,6 @@ public class MarkInfo {
 	
 	public void render(String[] n) {
 		for(String v : n){
-			System.out.println("v: " + v + " - " + toggleValue);
 			if(v.equals(toggleValue)){
 				toggle();
 			}

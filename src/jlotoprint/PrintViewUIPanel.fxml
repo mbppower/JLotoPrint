@@ -38,6 +38,7 @@
 					<items>
 						<Button alignment="CENTER" mnemonicParsing="false" onAction="#handleLoadGamesAction" text="Carregar Jogos" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
 						<Button alignment="CENTER" mnemonicParsing="false" onAction="#handlePrintAction" text="Imprimir" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+                  <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleExportPDFAction" text="Export to PDF" />
 					</items>
 				</ToolBar>
 			</top>
