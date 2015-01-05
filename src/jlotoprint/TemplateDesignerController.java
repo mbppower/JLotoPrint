@@ -18,10 +18,10 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jlotoprint.model.MarkInfo;
@@ -34,7 +34,7 @@ import jlotoprint.model.Template;
 public class TemplateDesignerController implements Initializable {
     
 	@FXML
-	public Pane imageContainer;
+	public Group imageContainer;
 	
 	@FXML
 	public ComboBox groupCombo;

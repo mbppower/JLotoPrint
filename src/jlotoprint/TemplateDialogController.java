@@ -6,55 +6,28 @@
 
 package jlotoprint;
 
-import com.sun.glass.ui.Application;
 import com.sun.javafx.event.EventUtil;
 import java.io.File;
-import java.nio.file.Files;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.FileVisitOption;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
-import jlotoprint.model.MarkInfo;
 import jlotoprint.model.Model;
 import jlotoprint.model.Template;
 
@@ -90,13 +63,15 @@ public class TemplateDialogController implements Initializable {
 	}
 	@FXML
 	private void handleSelectAction(ActionEvent event) {
-		String selectedItem = templateList.getSelectionModel().selectedItemProperty().getValue();
+		selectAction();
+	}
+	private void selectAction(){
+        String selectedItem = templateList.getSelectionModel().selectedItemProperty().getValue();
 		if(selectedItem != null){
 			Template.setTemplateFile(new File(selectedItem));
-		}
-		EventUtil.fireEvent(new TemplateDialogEvent(TemplateDialogEvent.SELECTED), selectButton);
-	}
-	
+            EventUtil.fireEvent(new TemplateDialogEvent(TemplateDialogEvent.SELECTED), selectButton);
+        }
+    }
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		
@@ -125,15 +100,21 @@ public class TemplateDialogController implements Initializable {
                 }
             }
         );
-		
-		templateList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        templateList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            public void changed(ObservableValue<? extends String> ov, String old_val, String new_val) {
-				File template = new File(new_val);
-                Model model = Model.load(template);
-                previewImage.setImage(new Image("file:" + template.getParent() + "/" + model.getImagePreview()));
-                nameText.setText(model.getName());
+        
+		templateList.setOnMouseClicked((MouseEvent mouseEvent) -> {
+            if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                if(mouseEvent.getClickCount() == 2){
+                    selectAction();
+                }
             }
+        });
+        
+		templateList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        templateList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> ov, String old_val, String new_val) -> {
+            File template = new File(new_val);
+            Model model = Model.load(template);
+            previewImage.setImage(new Image("file:" + template.getParent() + "/" + model.getImagePreview()));
+            nameText.setText(model.getName());
         });
 	}
 	

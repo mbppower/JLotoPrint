@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -29,11 +30,11 @@
                     <children>
                         <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" HBox.hgrow="ALWAYS" xmlns:fx="http://javafx.com/fxml">
                      <content>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-image: url(file:resources/transparent_bg.png); -fx-background-color: white; -fx-background-repeat: repeat;">
+                        <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-image: url(file:resources/transparent_bg.png); -fx-background-repeat: repeat;">
                            <children>
-                                      <Pane fx:id="imageContainer" prefHeight="200.0" prefWidth="200.0" />
+                              <Group fx:id="imageContainer" StackPane.alignment="CENTER" />
                            </children>
-                        </AnchorPane>
+                        </StackPane>
                      </content>
                         </ScrollPane>
                         <VBox layoutX="3.0" layoutY="71.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="250.0" spacing="10.0" HBox.hgrow="ALWAYS">
