@@ -48,6 +48,12 @@
 
     For list of available properties check the files
     nbproject/build-impl.xml and nbproject/jfx-impl.xml.
-
-    -->
+   -->
+   <!--Copy resources folder-->
+    <target name="-pre-jar">
+        <mkdir dir="${dist.dir}/resources"/>
+        <copy todir="${dist.dir}/resources">
+            <fileset dir="${basedir}/resources" />
+        </copy>
+    </target>
 </project>
