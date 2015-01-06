@@ -32,7 +32,7 @@ public class MarkInfo {
 	@Expose
 	private double height;
 	
-	private Rectangle rec;
+	private Rectangle rect;
 	
 	public MarkInfo(String id, String group, String type, String toggleValue, double x, double y, double width, double height) {
 		this.id = id;
@@ -46,8 +46,8 @@ public class MarkInfo {
 	}
 	
 	void toggle() {
-		if(rec != null){
-			rec.setFill(Color.BLACK);
+		if(rect != null){
+			rect.setFill(Color.BLACK);
 		}
 	}
 	
@@ -141,11 +141,11 @@ public class MarkInfo {
 		this.height = height;
 	}
 
-	public Rectangle getRec() {
-		return rec;
+	public Rectangle getRect() {
+		return rect;
 	}
 
-	public void setRec(Rectangle rec) {
-		this.rec = rec;
+	public void setRect(Rectangle rect) {
+		this.rect = rect;
 	}
 }

@@ -9,10 +9,6 @@ import jlotoprint.model.Model;
 import jlotoprint.model.MarkInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.Console;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -21,16 +17,13 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import jlotoprint.model.Template;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -62,7 +55,21 @@ public class LotoPanel extends Pane {
             oldValue = newValue;
         }
     };
-    public final void setSelection(MarkInfo value) { selectionProperty().set(value); }
+    public final void setSelection(MarkInfo value) {
+        
+        MarkInfo oldValue = selectionProperty().getValue();
+        if(oldValue != null){
+            oldValue.getRect().setStyle("-fx-stroke-width: 0");
+        }
+        value.getRect().setStyle("-fx-stroke: black;" +
+            "-fx-stroke-type: outside; " +
+            "-fx-stroke-width: 2;" +
+            "-fx-stroke-dash-array: 12 2 4 2;" +
+            "-fx-stroke-dash-offset: 6n" +
+            "-fx-stroke-line-cap: butt;");
+        
+        selectionProperty().set(value);
+    }
     public final MarkInfo getSelection() { return selectionProperty().get(); }
 	void valueInvalidated() {
         fireEvent(new ActionEvent());
@@ -82,16 +89,16 @@ public class LotoPanel extends Pane {
 	}
 	
 	public Rectangle createRect(final MarkInfo m) {
-		Rectangle rec = new Rectangle();
+		Rectangle rect = new Rectangle();
 		
-		rec.setFill(isEditEnabled ? (m.getType().equals("numberCount") ? Color.RED : m.getColor()) : Color.TRANSPARENT);
-		rec.setId(m.getId());
-		rec.setTranslateX(m.getX());
-		rec.setTranslateY(m.getY());
-		rec.setWidth(m.getWidth());
-		rec.setHeight(m.getHeight());
+		rect.setFill(isEditEnabled ? (m.getType().equals("numberCount") ? Color.RED : m.getColor()) : Color.TRANSPARENT);
+		rect.setId(m.getId());
+		rect.setTranslateX(m.getX());
+		rect.setTranslateY(m.getY());
+		rect.setWidth(m.getWidth());
+		rect.setHeight(m.getHeight());
 		if (isEditEnabled) {
-			rec.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent e) {
 					if (e.isSecondaryButtonDown()) {
 						Node target = ((Node) e.getTarget());
@@ -110,7 +117,7 @@ public class LotoPanel extends Pane {
 					}
 				}
 			});
-			rec.setOnMousePressed(new EventHandler<MouseEvent>() {
+			rect.setOnMousePressed(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent e) {
 					Rectangle target = ((Rectangle) e.getTarget());
 					originX = e.getX() - target.getX();
@@ -118,13 +125,13 @@ public class LotoPanel extends Pane {
 					target.setStyle("-fx-border-color:red");
 				}
 			});
-			rec.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			rect.setOnMouseReleased(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent e) {
 					Rectangle target = ((Rectangle) e.getTarget());
 					target.setStyle("-fx-border-color:black");
 				}
 			});
-			rec.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			rect.setOnMouseDragged(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent e) {
 
 					Rectangle target = ((Rectangle) e.getTarget());
@@ -146,12 +153,10 @@ public class LotoPanel extends Pane {
 				}
 			});
 		}
-		m.setRec(rec);
-		return rec;
+		m.setRect(rect);
+		return rect;
 	}
-	public void onShowProperties(final MarkInfo m){
-		
-	}
+
 	public void createMark(String groupName, String type, String toggleValue) {
 		String id = UUID.randomUUID().toString();
 		MarkInfo m = new MarkInfo(id, groupName, type, toggleValue, 0, 0, 16, 10);
@@ -166,7 +171,7 @@ public class LotoPanel extends Pane {
 			}
 			model.getGroupMap().get(m.getGroup()).add(m);
 		}
-		getChildren().add(m.getRec());
+		getChildren().add(m.getRect());
 	}
 
 	public void createMarkFromInfo(HashMap<String, ArrayList<MarkInfo>> map) {
@@ -177,7 +182,7 @@ public class LotoPanel extends Pane {
 	public void createMarkFromInfo(ArrayList<MarkInfo> markList) {
 		for (MarkInfo m : markList) {
 			createRect(m);
-			getChildren().add(m.getRec());
+			getChildren().add(m.getRect());
 		}
 	}
 

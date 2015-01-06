@@ -18,10 +18,11 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import jlotoprint.model.MarkInfo;
@@ -34,20 +35,17 @@ import jlotoprint.model.Template;
 public class TemplateDesignerController implements Initializable {
     
 	@FXML
-	public Group imageContainer;
-	
+	public Pane imageContainer;
+    @FXML
+    public Label zoomLevel;
 	@FXML
 	public ComboBox groupCombo;
-
 	@FXML
 	public TextField currentSelection;
-
 	@FXML
 	public ComboBox typeCombo;
-
 	@FXML
 	public TextField markValue;
-
 	@FXML
 	public Slider zoomBar;
     @FXML
@@ -120,17 +118,14 @@ public class TemplateDesignerController implements Initializable {
 				"numberCount"
 		));
 		typeCombo.setValue(typeCombo.getItems().get(0));
-
-		zoomBar.setValue(ZOOM);
-		zoomBar.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				ZOOM = newValue.doubleValue() / 100;
-				imageContainer.setScaleX(ZOOM);
-				imageContainer.setScaleY(ZOOM);
-                imageContainer.layout();
-			}
+        
+		zoomBar.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            ZOOM = newValue.doubleValue() / 100;
+            zoomLevel.setText(((int)newValue.doubleValue()) + "%");
+            imageContainer.setScaleX(ZOOM);
+            imageContainer.setScaleY(ZOOM);
 		});
+        zoomBar.setValue(ZOOM * 100);
 
 		groupCombo.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
@@ -150,55 +145,37 @@ public class TemplateDesignerController implements Initializable {
 				}
 			}
 		});
-		markValue.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				MarkInfo m = lotoPanel.getSelection();
-				if (m != null) {
-					m.setToggleValue(newValue);
-				}
-			}
+		markValue.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            MarkInfo m = lotoPanel.getSelection();
+            if (m != null) {
+                m.setToggleValue(newValue);
+            }
 		});
         
 		lotoPanel = new LotoPanel(true);
-		lotoPanel.selectionProperty().addListener(new ChangeListener<MarkInfo>() {
-			@Override
-			public void changed(ObservableValue<? extends MarkInfo> observable, MarkInfo oldValue, MarkInfo newValue) {
-				if (newValue != null) {
-					currentSelection.setText(newValue.getId());
-					groupCombo.setValue(newValue.getGroup());
-					typeCombo.setValue(newValue.getType());
-					markValue.setText(newValue.getToggleValue());
-				}
-			}
+		lotoPanel.selectionProperty().addListener((ObservableValue<? extends MarkInfo> observable, MarkInfo oldValue, MarkInfo newValue) -> {
+            if (newValue != null) {
+                currentSelection.setText(newValue.getId());
+                groupCombo.setValue(newValue.getGroup());
+                typeCombo.setValue(newValue.getType());
+                markValue.setText(newValue.getToggleValue());
+            }
 		});
         lotoPanel.importMarks();
         templateName.setText(lotoPanel.model.getName());
-        templateName.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                lotoPanel.model.setName(newValue);
-			}
+        templateName.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            lotoPanel.model.setName(newValue);
 		});
         templateImage.setText(lotoPanel.model.getImage());
-        templateImage.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				lotoPanel.model.setImage(newValue);
-			}
+        templateImage.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+			lotoPanel.model.setImage(newValue);
 		});
+        
         templateImagePreview.setText(lotoPanel.model.getImagePreview());
-        templateImagePreview.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				lotoPanel.model.setImagePreview(newValue);
-			}
+        templateImagePreview.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+			lotoPanel.model.setImagePreview(newValue);
 		});
-		//imageContainer.setAlignment(Pos.CENTER);
+        
 		imageContainer.getChildren().add(lotoPanel);
-		//GridPane.setHalignment(lotoPanel, HPos.CENTER);
-		//GridPane.setValignment(lotoPanel, VPos.CENTER);
-		imageContainer.setScaleX(ZOOM);
-		imageContainer.setScaleY(ZOOM);
 	}
 }
