@@ -26,6 +26,10 @@ public class JLotoPrint extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+        
+        //theme
+        setUserAgentStylesheet(STYLESHEET_MODENA);
+            
 		//INIT CONFIG
 		Template.setTemplateDir("resources/templates/");
 		//END CONFIG

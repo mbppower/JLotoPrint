@@ -34,7 +34,7 @@
                               <Label fx:id="officialSiteText" alignment="CENTER" minWidth="100.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                               <ImageView fx:id="previewImage" fitHeight="275.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                                  <effect>
-                                    <DropShadow blurType="TWO_PASS_BOX" color="#000000cc" height="10.0" radius="4.5" width="10.0" />
+                                    <DropShadow blurType="TWO_PASS_BOX" color="#0000009a" height="10.0" offsetX="4.0" offsetY="4.0" radius="4.5" width="10.0" />
                                  </effect>
                               </ImageView>
                            </children>

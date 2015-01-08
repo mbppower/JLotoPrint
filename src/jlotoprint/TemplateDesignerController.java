@@ -5,10 +5,13 @@
  */
 package jlotoprint;
 
+import com.sun.javafx.event.EventUtil;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
+
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,15 +19,24 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventTarget;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.ButtonBar;
 import jlotoprint.model.MarkInfo;
 import jlotoprint.model.Template;
 
@@ -82,9 +94,69 @@ public class TemplateDesignerController implements Initializable {
 			});
         }
 	}
+    @FXML
+	private void handleNewModelAction(ActionEvent event) {
+    }
+   
+    @FXML
+	private void handleExitAction(ActionEvent event) {
+        if(showSaveChangesDialog()){
+            EventUtil.fireEvent(new TemplateDesignerEvent(TemplateDesignerEvent.CLOSE), imageContainer);
+        }
+    }
+    
+    public boolean showSaveChangesDialog(){
+        if(Template.isLoaded()){
+            
+            ButtonType saveAndExit = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+            ButtonType dontSave = new ButtonType("Don't save", ButtonBar.ButtonData.NO);
+
+            Alert dialog = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to save changes?", saveAndExit, dontSave, ButtonType.CANCEL);
+            dialog.initModality(Modality.WINDOW_MODAL);
+            Optional<ButtonType> result = dialog.showAndWait();
+            //save and exit
+            if (result.get() == saveAndExit){
+                saveModel();
+                return true;
+            }
+            //don't save
+            else if (result.get() == dontSave){
+                return true;
+            }   
+            //cancel
+            else{
+                return false;
+            }
+        }
+        else{
+            //exit
+            return true;
+        }
+    }
+      
+    @FXML
+	private void handleSaveModelAction(ActionEvent event) {
+        saveModel();
+    }
     
 	@FXML
-	private void handleSaveModelAction(ActionEvent event) {
+	private void handleSaveAsModelAction(ActionEvent event) {
+        saveAsDialog();
+	}
+    private void saveModel(){
+        if(lotoPanel != null){
+            File file = Template.getTemplateFile();
+            if(file != null && file.exists()){
+                //Show save file dialog
+                saveModelFile(file);
+            }
+            else{
+                saveAsDialog();
+            }
+		}
+    }
+    
+	private void saveAsDialog(){
         if(lotoPanel != null){
 			FileChooser fileChooser = new FileChooser();
 			FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("JLotoPrint Model (*.json)", "*.json");
@@ -93,19 +165,22 @@ public class TemplateDesignerController implements Initializable {
             fileChooser.setInitialFileName("template");
 			//Show save file dialog
 			File file = fileChooser.showSaveDialog(JLotoPrint.stage);
-			if (file != null) {
-				try {
-					FileWriter fileWriter = new FileWriter(file);
-					fileWriter.write(lotoPanel.getJsonModel());
-					fileWriter.close();
-				}
-                catch (IOException ex) {
-					Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
+			saveModelFile(file);
 		}
-	}
-	
+    }
+    private void saveModelFile(File file){
+        if (file != null) {
+            try {
+                FileWriter fileWriter = new FileWriter(file);
+                fileWriter.write(lotoPanel.getJsonModel());
+                fileWriter.close();
+            }
+            catch (IOException ex) {
+                Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
 	public void loadPanel(){
 		groupCombo.setItems(FXCollections.observableArrayList(
 				"Group_1",

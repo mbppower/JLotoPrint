@@ -11,6 +11,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -19,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 
 /**
@@ -36,9 +39,21 @@ public class MainViewController implements Initializable {
 	}
     @FXML
     public void handleOpenTemplateDesigner(ActionEvent event){
-        final Stage stage = new Stage();
+       
 		try {
-			Parent root = FXMLLoader.load(MainViewController.class.getResource("TemplateDesigner.fxml"));
+            FXMLLoader dialog = new FXMLLoader(MainViewController.class.getResource("TemplateDesigner.fxml"));
+			Parent root = (Parent)dialog.load();
+            final Stage stage = new Stage();
+            stage.setOnCloseRequest((WindowEvent windowEvent) -> {
+                boolean shouldClose = ((TemplateDesignerController)dialog.getController()).showSaveChangesDialog();
+                //cancel event
+                if (!shouldClose) {
+                    windowEvent.consume();
+                }
+            });
+			root.addEventHandler(TemplateDesignerEvent.CLOSE, actionEvent -> {
+				stage.close();
+			});
 			stage.setScene(new Scene(root));
 			stage.setTitle("Template Designer");
 			stage.initModality(Modality.WINDOW_MODAL);

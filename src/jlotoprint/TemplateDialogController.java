@@ -44,7 +44,7 @@ public class TemplateDialogController implements Initializable {
 	@FXML
 	public Button selectButton;
     
-        @FXML
+    @FXML
 	public ImageView previewImage;
 	
 	@FXML
@@ -58,8 +58,7 @@ public class TemplateDialogController implements Initializable {
 
 	@FXML
 	private void handleCancelAction(ActionEvent event) {
-		ActionEvent actionEvent = new ActionEvent("cancel", cancelButton);
-		EventUtil.fireEvent(new TemplateDialogEvent(TemplateDialogEvent.CANCELED), selectButton);
+		EventUtil.fireEvent(new TemplateDialogEvent(TemplateDialogEvent.CANCELED), cancelButton);
 	}
 	@FXML
 	private void handleSelectAction(ActionEvent event) {

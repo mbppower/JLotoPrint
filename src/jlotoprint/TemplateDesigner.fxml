@@ -16,8 +16,13 @@
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#handleOpenTemplateAction" text="Open Template..." />
-                                <MenuItem mnemonicParsing="false" onAction="#handleSaveModelAction" text="Save Template..." />
+                        <MenuItem mnemonicParsing="false" onAction="#handleNewModelAction" text="New" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleOpenTemplateAction" text="Open..." />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleSaveModelAction" text="Save" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleSaveAsModelAction" text="Save As..." />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExitAction" text="Exit" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Help">
