@@ -16,11 +16,19 @@ import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 
@@ -37,6 +45,10 @@ public class MainViewController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		
 	}
+    @FXML
+    public void handleAboutAction(ActionEvent event){
+        loadAboutWindow();
+    }
     @FXML
     public void handleOpenTemplateDesigner(ActionEvent event){
        
@@ -83,5 +95,48 @@ public class MainViewController implements Initializable {
             return null;
 		}
         return stage;
+    }
+    
+    public static void loadAboutWindow(){
+        
+        //setup
+        Dialog dialog = new Dialog<>();
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        dialog.setTitle("About JLotoPanel");
+        dialog.setHeaderText("JLotoPanel v1.0");
+        ImageView icon = new ImageView("file:resources/icon.png");
+        icon.setSmooth(true);
+        icon.setFitHeight(48.0);
+        icon.setFitWidth(48.0);
+        dialog.setGraphic(icon);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        
+        //content
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 10, 0, 10));
+        
+        //text
+        TextArea textArea = new TextArea("For more info, please visit: https://github.com/mbppower/JLotoPanel");
+        textArea.setWrapText(true);
+        grid.add(textArea, 0, 0);
+        dialog.getDialogPane().setContent(grid);
+        
+        dialog.showAndWait();
+    }
+    
+    public static void showExceptionAlert(String message, String details){
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+
+        TextArea textArea = new TextArea(details);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 10, 0, 10)); 
+        grid.add(textArea, 0, 0);
+
+        //set content
+        alert.getDialogPane().setExpandableContent(grid);
+        alert.showAndWait();
     }
 }

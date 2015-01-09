@@ -10,20 +10,23 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import java.util.ResourceBundle;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventTarget;
-import javafx.event.EventType;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -35,17 +38,24 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Node;
-import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ToolBar;
+import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.BorderPaneBuilder;
 import jlotoprint.model.MarkInfo;
 import jlotoprint.model.Template;
+import org.controlsfx.control.PopOver;
 
 /**
  *
  * @author Marcel.Barbosa
  */
 public class TemplateDesignerController implements Initializable {
-    
+    @FXML
+	public Pane editorContainer;
 	@FXML
 	public Pane imageContainer;
     @FXML
@@ -69,12 +79,16 @@ public class TemplateDesignerController implements Initializable {
     
 	public static double ZOOM = .5;
 
-	LotoPanel lotoPanel;
+	public LotoPanel lotoPanel;
+    public ObservableList<String> groupObservableList;
     
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
         if(Template.isLoaded()){
             loadPanel();
+        }
+        else{
+            editorContainer.setVisible(false);
         }
 	}
 	@FXML
@@ -96,6 +110,7 @@ public class TemplateDesignerController implements Initializable {
 	}
     @FXML
 	private void handleNewModelAction(ActionEvent event) {
+        
     }
    
     @FXML
@@ -105,6 +120,10 @@ public class TemplateDesignerController implements Initializable {
         }
     }
     
+    @FXML
+    public void handleAboutAction(ActionEvent event){
+        MainViewController.loadAboutWindow();
+    }
     public boolean showSaveChangesDialog(){
         if(Template.isLoaded()){
             
@@ -112,7 +131,7 @@ public class TemplateDesignerController implements Initializable {
             ButtonType dontSave = new ButtonType("Don't save", ButtonBar.ButtonData.NO);
 
             Alert dialog = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to save changes?", saveAndExit, dontSave, ButtonType.CANCEL);
-            dialog.initModality(Modality.WINDOW_MODAL);
+            dialog.initModality(Modality.APPLICATION_MODAL);
             Optional<ButtonType> result = dialog.showAndWait();
             //save and exit
             if (result.get() == saveAndExit){
@@ -133,7 +152,50 @@ public class TemplateDesignerController implements Initializable {
             return true;
         }
     }
-      
+    @FXML
+	private void handleOpenGroupListAction(ActionEvent event) {
+        
+        //content
+        ListView<String> listView = new ListView<>(groupObservableList);
+        listView.setEditable(true);
+        listView.setPrefWidth(200);
+        listView.setPrefHeight(300);
+        listView.setPadding(new Insets(10));
+        
+        listView.setCellFactory(TextFieldListCell.forListView());
+        
+        listView.setOnEditCommit((ListView.EditEvent<String> target) -> {
+            String name = target.getNewValue();
+            if(listView.getItems().contains(name)){
+                name = UUID.randomUUID().toString();
+            }
+            listView.getItems().set(target.getIndex(), name);
+        });
+        
+        Button addButton = new Button("Add");
+        addButton.setPadding(new Insets(10));
+        addButton.setOnAction((ActionEvent actionEvent) -> {
+            String name = "Group_" + (listView.getItems().size() + 1);
+            if(listView.getItems().contains(name)){
+                name = UUID.randomUUID().toString();
+            }
+            listView.getItems().add(name);
+        });
+        
+        Button removeButton = new Button("Remove");
+        removeButton.setPadding(new Insets(10));
+        removeButton.setOnAction((ActionEvent actionEvent) -> {
+            int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+            if(selectedIndex > -1)
+                listView.getItems().remove(selectedIndex);
+        });
+        
+        //popover
+        PopOver popOver = new PopOver(BorderPaneBuilder.create().center(listView).bottom(new ToolBar(removeButton, addButton)).build());
+        popOver.setAutoHide(true);
+        popOver.show((Node)event.getSource());
+    }
+    
     @FXML
 	private void handleSaveModelAction(ActionEvent event) {
         saveModel();
@@ -182,18 +244,16 @@ public class TemplateDesignerController implements Initializable {
     }
     
 	public void loadPanel(){
-		groupCombo.setItems(FXCollections.observableArrayList(
-				"Group_1",
-				"Group_2"
-		));
-		groupCombo.setValue(groupCombo.getItems().get(0));
-
+         
+        //nodes
 		typeCombo.setItems(FXCollections.observableArrayList(
-				"option",
-				"numberCount"
+            "option",
+            "numberCount"
 		));
 		typeCombo.setValue(typeCombo.getItems().get(0));
-        
+        imageContainer.setOnScroll((ScrollEvent event) -> {
+            zoomBar.setValue(zoomBar.getValue() + (event.getDeltaY())/100);
+        });
 		zoomBar.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             ZOOM = newValue.doubleValue() / 100;
             zoomLevel.setText(((int)newValue.doubleValue()) + "%");
@@ -236,21 +296,32 @@ public class TemplateDesignerController implements Initializable {
                 markValue.setText(newValue.getToggleValue());
             }
 		});
-        lotoPanel.importMarks();
-        templateName.setText(lotoPanel.model.getName());
+        lotoPanel.loadTemplate();
+        
+         //template 
+        groupObservableList = FXCollections.observableArrayList(lotoPanel.getModel().getGroupList());
+        groupObservableList.addListener((ListChangeListener.Change<? extends String> c) -> {
+            lotoPanel.getModel().setGroupList(new ArrayList<>(groupObservableList));
+            groupCombo.setItems(groupObservableList);
+        });
+        groupCombo.setItems(groupObservableList);
+		groupCombo.setValue(groupCombo.getItems().get(0));
+        
+        templateName.setText(lotoPanel.getModel().getName());
         templateName.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            lotoPanel.model.setName(newValue);
+            lotoPanel.getModel().setName(newValue);
 		});
-        templateImage.setText(lotoPanel.model.getImage());
+        templateImage.setText(lotoPanel.getModel().getImage());
         templateImage.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-			lotoPanel.model.setImage(newValue);
+			lotoPanel.getModel().setImage(newValue);
 		});
         
-        templateImagePreview.setText(lotoPanel.model.getImagePreview());
+        templateImagePreview.setText(lotoPanel.getModel().getImagePreview());
         templateImagePreview.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-			lotoPanel.model.setImagePreview(newValue);
+			lotoPanel.getModel().setImagePreview(newValue);
 		});
-        
 		imageContainer.getChildren().add(lotoPanel);
+        
+        editorContainer.setVisible(true);
 	}
 }

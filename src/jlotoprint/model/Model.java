@@ -13,6 +13,10 @@ import java.io.FileInputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
 import jlotoprint.model.MarkInfo;
 import org.apache.commons.io.IOUtils;
 
@@ -36,6 +40,25 @@ public class Model {
 
 	@Expose
 	public HashMap<String, ArrayList<MarkInfo>> groupMap = new HashMap<>();
+    
+    @Expose
+	public ArrayList<String> groupList = new ArrayList<>();
+
+    public ArrayList<String> getGroupList() {
+        if(groupList.size() == 0){
+            ArrayList<String> defaultList = new ArrayList<>();
+            defaultList.add("Group_1");
+            defaultList.add("Group_2");
+            setGroupList(defaultList);
+            return defaultList;
+        }
+        else{
+            return groupList;
+        }
+    }
+    public void setGroupList(ArrayList<String> groupList) {
+        this.groupList = groupList;
+    }
 
 	@Expose
 	public ArrayList<MarkInfo> numberCountMap = new ArrayList<>();
@@ -106,7 +129,7 @@ public class Model {
 	public Model() {
 
 	}
-    public  static Model load(File template){
+    public  static Model load(File template, boolean showFeedback){
         Model model = null;
         try {
 			StringWriter writer = new StringWriter();
@@ -115,7 +138,11 @@ public class Model {
 			model = g.fromJson(writer.toString(), Model.class);
 		} 
 		catch (Exception e) {
-			e.printStackTrace();
+            if(showFeedback){
+                Alert dialog = new Alert(Alert.AlertType.ERROR, "The template you are trying to load is invalid.", ButtonType.OK);
+                dialog.initModality(Modality.APPLICATION_MODAL);
+                dialog.showAndWait();
+            }
 		}
         return model;
     }

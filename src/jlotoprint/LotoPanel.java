@@ -35,9 +35,12 @@ public class LotoPanel extends Pane {
 	private double originY;
 	public Boolean isEditEnabled = true;
     
-	public Model model = new Model();
-	
-	
+	private Model model = new Model();
+
+    public Model getModel() {
+        return model;
+    }
+
 	//BEGIN selection value
 	public ObjectProperty<MarkInfo> selectionProperty() { return selection; }
     private ObjectProperty<MarkInfo> selection = new SimpleObjectProperty<MarkInfo>(this, "selection") {
@@ -64,8 +67,8 @@ public class LotoPanel extends Pane {
         value.getRect().setStyle("-fx-stroke: black;" +
             "-fx-stroke-type: outside; " +
             "-fx-stroke-width: 2;" +
-            "-fx-stroke-dash-array: 12 2 4 2;" +
-            "-fx-stroke-dash-offset: 6n" +
+            "-fx-stroke-dash-array: 4 2 4 2;" +
+            "-fx-stroke-dash-offset: 4n;" +
             "-fx-stroke-line-cap: butt;");
         
         selectionProperty().set(value);
@@ -221,11 +224,13 @@ public class LotoPanel extends Pane {
 		}
 	}
 
-	public void importMarks() {
-		model = Model.load(Template.getTemplateFile());
-        System.out.println("-----------------NumberCount:" + model.getNumberCountMap().toArray().length);
-		createMarkFromInfo(model.getGroupMap());
-		System.out.println("-----------------NumberCount:" + model.getNumberCountMap().toArray().length);
+	public void loadTemplate() {
+		model = Model.load(Template.getTemplateFile(), true);
+        if(model == null)
+            model = new Model();
+        //for groups
+        createMarkFromInfo(model.getGroupMap());
+        //for options
         createMarkFromInfo(model.getNumberCountMap());
 	}
 }

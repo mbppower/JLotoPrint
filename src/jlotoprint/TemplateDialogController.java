@@ -15,7 +15,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -82,23 +84,16 @@ public class TemplateDialogController implements Initializable {
 		for(String name : templateDir.list()){
 			File file = new File(Template.getTemplateDir() + "/" + name);
 			if (file.isDirectory()) {
-                            File json = new File(file + "/template.json");
-                            if(json.exists()){
-                                templates.add(json.getAbsolutePath());
-                            }
+                File json = new File(file + "/template.json");
+                if(json.exists()){
+                    templates.add(json.getAbsolutePath());
+                }
 			}
 		}
 		
 		templateList.setItems(FXCollections.observableArrayList(templates));
  
-        templateList.setCellFactory(new Callback<ListView<String>, 
-            ListCell<String>>() {
-                @Override 
-                public ListCell<String> call(ListView<String> list) {
-                    return new TemplateCell();
-                }
-            }
-        );
+        templateList.setCellFactory((ListView<String> list) -> new TemplateCell());
         
 		templateList.setOnMouseClicked((MouseEvent mouseEvent) -> {
             if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
@@ -111,9 +106,15 @@ public class TemplateDialogController implements Initializable {
 		templateList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         templateList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> ov, String old_val, String new_val) -> {
             File template = new File(new_val);
-            Model model = Model.load(template);
-            previewImage.setImage(new Image("file:" + template.getParent() + "/" + model.getImagePreview()));
-            nameText.setText(model.getName());
+            Model model = Model.load(template, false);
+            if(model == null){
+                previewImage.setImage(new Image("file:resources/icons/ico_warning.png"));
+                nameText.setText("Invalid Template");
+            }
+            else{
+                previewImage.setImage(new Image("file:" + template.getParent() + "/" + model.getImagePreview()));
+                nameText.setText(model.getName());
+            }
         });
 	}
 	
@@ -121,15 +122,17 @@ public class TemplateDialogController implements Initializable {
         @Override
         public void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
-            if (
-                item != null) {
-                
+            if (item != null) {
                 File template = new File(item);
-                Model model = Model.load(template);
-                
-				Label label = new Label(model.getName() != null ? model.getName() : item);
-                
-				setGraphic(label);
+                Model model = Model.load(template, false);
+                String labelText;
+                if(model == null){
+                    labelText = "Invalid: " + item;
+                }
+                else{
+                    labelText = model.getName() != null ? model.getName() : item;
+                }
+				setGraphic(new Label(labelText));
             }
         }
     }

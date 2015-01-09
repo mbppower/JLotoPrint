@@ -12,7 +12,7 @@
 	<children>
 		<BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<center>
-				<AnchorPane fx:id="paginationContainer" minHeight="0.0" minWidth="0.0" style="-fx-background-color: white; -fx-background-image: url(file:resources/transparent_bg.png); -fx-background-repeat:repeat;">
+				<AnchorPane fx:id="paginationContainer" minHeight="0.0" minWidth="0.0" style="-fx-background-color: white; -fx-background-image: url(file:resources/img/grain_bg.png); -fx-background-repeat:repeat;">
                <children>
                   <VBox fx:id="initialContent" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>

@@ -25,6 +25,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
 import javafx.print.PageLayout;
@@ -34,8 +35,11 @@ import javafx.print.PrintResolution;
 import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -45,6 +49,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jlotoprint.model.Template;
@@ -147,7 +152,7 @@ public class PrintViewUIPanelController implements Initializable {
                         }
                     }
                     LotoPanel lotoPanel = new LotoPanel(false);
-                    lotoPanel.importMarks();
+                    lotoPanel.loadTemplate();
 
                     lotoPanel.render(groupData);
                     container.add(lotoPanel, currentCol, currentRow);
@@ -365,9 +370,14 @@ public class PrintViewUIPanelController implements Initializable {
                     node.requestLayout();
                 }
                 doc.save(sourceFile);
+                
+                //sucess
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "PDF document sucessfully exported.", ButtonType.OK);
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.showAndWait();
             }
             catch(Exception ex) {
-                ex.printStackTrace();
+               MainViewController.showExceptionAlert("Error exporting the PDF document", ex.getStackTrace().toString());
             }
             finally {
                 try {
