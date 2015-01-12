@@ -6,14 +6,12 @@
 
 package jlotoprint;
 
-import java.net.URL;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javax.swing.ImageIcon;
 import jlotoprint.model.Template;
 
 /**

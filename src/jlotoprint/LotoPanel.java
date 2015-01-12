@@ -7,8 +7,7 @@ package jlotoprint;
 
 import jlotoprint.model.Model;
 import jlotoprint.model.MarkInfo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -35,11 +34,7 @@ public class LotoPanel extends Pane {
 	private double originY;
 	public Boolean isEditEnabled = true;
     
-	private Model model = new Model();
-
-    public Model getModel() {
-        return model;
-    }
+	private Model model;
 
 	//BEGIN selection value
 	public ObjectProperty<MarkInfo> selectionProperty() { return selection; }
@@ -67,8 +62,8 @@ public class LotoPanel extends Pane {
         value.getRect().setStyle("-fx-stroke: black;" +
             "-fx-stroke-type: outside; " +
             "-fx-stroke-width: 2;" +
-            "-fx-stroke-dash-array: 4 2 4 2;" +
-            "-fx-stroke-dash-offset: 4n;" +
+            "-fx-stroke-dash-array: 2 2 2 2;" +
+            "-fx-stroke-dash-offset: 4;" +
             "-fx-stroke-line-cap: butt;");
         
         selectionProperty().set(value);
@@ -79,17 +74,24 @@ public class LotoPanel extends Pane {
     }
 	//END selection value
 	
-	public LotoPanel(Boolean isEditEnabled) {
+	public LotoPanel(Model model, Boolean isEditEnabled) {
+        this.model = model;
 		this.isEditEnabled = isEditEnabled;
-		double w = model.getImageWidth();
+		setImage();
+	}
+    
+    public final void setImage(){
+        double w = model.getImageWidth();
 		double h = model.getImageHeight();
 		String size = w + "px " + h + "px";
-		String image = "file:" + Template.getTemplateDir() + Template.getTemplateFile().getParentFile().getName() + "/" + (isEditEnabled ? model.getImagePreview() : model.getImage());
-		System.out.println(image);
-		setStyle("-fx-border-color:red; -fx-background-color: #00ffaa; -fx-background-repeat: no-repeat; -fx-background-image: url(\"" + image + "\"); -fx-background-size:contain");
-		setMinSize(w, h);
+		String image = Template.getTemplateDir() + Template.getTemplateFile().getParentFile().getName() + "/" + (isEditEnabled ? model.getImagePreview() : model.getImage());
+        File imageFile = new File(image);
+        if(imageFile.exists()){
+            setStyle("-fx-border-color:red; -fx-background-color: #ccc; -fx-background-repeat: no-repeat; -fx-background-image: url(\"file:" + image + "\"); -fx-background-size:contain");
+        }
+        setMinSize(w, h);
 		setMaxSize(w, h);
-	}
+    }
 	
 	public Rectangle createRect(final MarkInfo m) {
 		Rectangle rect = new Rectangle();
@@ -189,11 +191,6 @@ public class LotoPanel extends Pane {
 		}
 	}
 
-	public String getJsonModel() {
-		Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		return g.toJson(model);
-	}
-
 	void render(ArrayList<String[]> data) throws Exception {
 		Boolean isValid = true;
 		int size = 0;
@@ -225,9 +222,6 @@ public class LotoPanel extends Pane {
 	}
 
 	public void loadTemplate() {
-		model = Model.load(Template.getTemplateFile(), true);
-        if(model == null)
-            model = new Model();
         //for groups
         createMarkFromInfo(model.getGroupMap());
         //for options

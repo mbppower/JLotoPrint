@@ -9,39 +9,40 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane id="AnchorPane" minHeight="400.0" minWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.PrintViewUIPanelController">
-	<children>
-		<BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-			<center>
-				<AnchorPane fx:id="paginationContainer" minHeight="0.0" minWidth="0.0" style="-fx-background-color: white; -fx-background-image: url(file:resources/img/grain_bg.png); -fx-background-repeat:repeat;">
-               <children>
-                  <VBox fx:id="initialContent" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <Label alignment="CENTER" text="Please, load your numbers" textAlignment="CENTER">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@file:resources/icon.png" />
-                           </image>
-                           <VBox.margin>
-                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                           </VBox.margin>
-                        </ImageView>
-                     </children>
-                  </VBox>
-               </children></AnchorPane>
-			</center>
-			<top>
-				<ToolBar prefWidth="200.0" HBox.hgrow="ALWAYS" xmlns:fx="http://javafx.com/fxml">
-					<items>
-						<Button alignment="CENTER" mnemonicParsing="false" onAction="#handleLoadGamesAction" text="Carregar Jogos" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
-						<Button alignment="CENTER" mnemonicParsing="false" onAction="#handlePrintAction" text="Imprimir" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
-                  <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleExportPDFAction" text="Export to PDF" />
-					</items>
-				</ToolBar>
-			</top>
-		</BorderPane>
-	</children>
+    <children>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <center>
+                <AnchorPane fx:id="paginationContainer" minHeight="0.0" minWidth="0.0" style="-fx-background-color: white; -fx-background-image: url(file:resources/img/grain_bg.png); -fx-background-repeat:repeat;">
+                    <children>
+                        <VBox fx:id="initialContent" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <children>
+                                <Label alignment="CENTER" text="Please, load your numbers" textAlignment="CENTER">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@file:resources/icon.png" />
+                                    </image>
+                                    <VBox.margin>
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                    </VBox.margin>
+                                </ImageView>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </center>
+            <top>
+                <ToolBar prefWidth="200.0" HBox.hgrow="ALWAYS" xmlns:fx="http://javafx.com/fxml">
+                    <items>
+                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleLoadGamesAction" text="Carregar Jogos" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#handlePrintAction" text="Imprimir" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />
+                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleExportPDFAction" text="Export to PDF" />
+                    </items>
+                </ToolBar>
+            </top>
+        </BorderPane>
+    </children>
 </AnchorPane>

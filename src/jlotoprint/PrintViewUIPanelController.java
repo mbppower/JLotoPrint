@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,15 +17,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
+import javafx.animation.FadeTransition;
+import javafx.animation.RotateTransition;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
@@ -39,7 +36,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -52,6 +48,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Duration;
+import jlotoprint.model.Model;
 import jlotoprint.model.Template;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -59,7 +57,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 
 /**
  *
@@ -85,7 +82,16 @@ public class PrintViewUIPanelController implements Initializable {
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+        initialContent.setOpacity(0.0);
         initialContent.setVisible(true);
+        
+        //fade
+        FadeTransition ft = new FadeTransition(Duration.millis(2000), initialContent);
+        ft.setFromValue(0.0);
+        ft.setToValue(1.0);
+        ft.setCycleCount(1);
+        ft.setAutoReverse(true);
+        ft.play();
 	}
 
 	public List<String> readTextFileAsList(File file) {
@@ -110,8 +116,9 @@ public class PrintViewUIPanelController implements Initializable {
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text File", "*.txt"));
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 		File sourceFile = fileChooser.showOpenDialog(JLotoPrint.stage.getOwner());
-
-		if (sourceFile != null) {
+        Model model = Template.load(true);
+        
+		if (sourceFile != null && model != null) {
             try{
 
                 List<String> lines = readTextFileAsList(sourceFile);
@@ -134,7 +141,8 @@ public class PrintViewUIPanelController implements Initializable {
                 int currentRow = 0;
 
                 GridPane container = new GridPane();
-
+                
+                
                 pageList = new ArrayList<>();
                 pageList.add(getNewPage(container));
                 System.out.println("---------------- new page");
@@ -151,7 +159,7 @@ public class PrintViewUIPanelController implements Initializable {
                             pageList.add(getNewPage(container));
                         }
                     }
-                    LotoPanel lotoPanel = new LotoPanel(false);
+                    LotoPanel lotoPanel = new LotoPanel(model, false);
                     lotoPanel.loadTemplate();
 
                     lotoPanel.render(groupData);

@@ -11,13 +11,9 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -29,7 +25,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.util.Callback;
 import jlotoprint.model.Model;
 import jlotoprint.model.Template;
 
@@ -106,7 +101,7 @@ public class TemplateDialogController implements Initializable {
 		templateList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         templateList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> ov, String old_val, String new_val) -> {
             File template = new File(new_val);
-            Model model = Model.load(template, false);
+            Model model = Template.load(template, false);
             if(model == null){
                 previewImage.setImage(new Image("file:resources/icons/ico_warning.png"));
                 nameText.setText("Invalid Template");
@@ -124,7 +119,7 @@ public class TemplateDialogController implements Initializable {
             super.updateItem(item, empty);
             if (item != null) {
                 File template = new File(item);
-                Model model = Model.load(template, false);
+                Model model = Template.load(template, false);
                 String labelText;
                 if(model == null){
                     labelText = "Invalid: " + item;

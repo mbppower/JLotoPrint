@@ -129,21 +129,9 @@ public class Model {
 	public Model() {
 
 	}
-    public  static Model load(File template, boolean showFeedback){
-        Model model = null;
-        try {
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(new FileInputStream(template), writer, "UTF-8");
-			Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-			model = g.fromJson(writer.toString(), Model.class);
-		} 
-		catch (Exception e) {
-            if(showFeedback){
-                Alert dialog = new Alert(Alert.AlertType.ERROR, "The template you are trying to load is invalid.", ButtonType.OK);
-                dialog.initModality(Modality.APPLICATION_MODAL);
-                dialog.showAndWait();
-            }
-		}
-        return model;
-    }
+    
+    public String toJson() {
+		Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		return g.toJson(this);
+	}
 }
