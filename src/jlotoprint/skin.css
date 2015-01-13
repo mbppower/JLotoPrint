@@ -1,0 +1,41 @@
+.root{
+    -fx-base: #464646;
+    -fx-background-color: #666;
+    -fx-background-image: url(file:resources/img/grain_bg.png);
+    -fx-background-repeat: repeat;
+    -fx-focus-color: transparent;
+}
+.menu-bar .menu-button:hover,
+.menu-bar .menu-button:showing,
+.menu-bar .menu-button:focused,
+.menu-bar .menu-item:hover,
+.menu-bar .menu-item:showing,
+.menu-bar .menu-item:focused{
+    -fx-background-color: #333;
+}
+.text-field{
+    -fx-base: #ccc;
+}
+.list-view{
+    -fx-base: #ccc;
+}
+.button:default{
+    -fx-base: #808080;
+}
+.button:cancel{
+    -fx-base: #333;
+}
+
+.button{
+    -fx-border-color: #111;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+
+.editorCanvas{
+    -fx-background-image: url(file:resources/img/transparent_bg.png);
+    -fx-background-repeat: repeat;
+}
+.dropShadow{
+    -fx-effect: dropshadow( one-pass-box , black , 20 , 0.0 , 0 , 0 );
+}

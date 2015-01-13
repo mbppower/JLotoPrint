@@ -26,6 +26,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -38,10 +39,15 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPaneBuilder;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import jlotoprint.model.MarkInfo;
 import jlotoprint.model.Template;
 import org.controlsfx.control.PopOver;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 
 /**
  *
@@ -76,8 +82,26 @@ public class TemplateDesignerEditorController implements Initializable {
 	public LotoPanel lotoPanel;
     public ObservableList<String> groupObservableList;
     
+    @FXML
+    public Button groupEditButton;
+    @FXML
+	public Button imagePickButton;
+    @FXML
+	public Button imagePreviewPickButton;
+    @FXML
+	public Button addMarkButton;
+    @FXML
+	public Button deleteMarkButton;
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+        //icons
+        imagePickButton.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.FOLDER_ALT));
+        imagePreviewPickButton.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.FOLDER_ALT));
+        groupEditButton.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.PENCIL));
+        
+        addMarkButton.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.PLUS_SQUARE_ALT));
+        deleteMarkButton.setGraphic(new Glyph("FontAwesome", FontAwesome.Glyph.MINUS_SQUARE_ALT));
+        
         loadPanel();
 	}
 	@FXML
@@ -137,7 +161,6 @@ public class TemplateDesignerEditorController implements Initializable {
         listView.setPrefWidth(200);
         listView.setPrefHeight(300);
         listView.setPadding(new Insets(10));
-        
         listView.setCellFactory(TextFieldListCell.forListView());
         
         listView.setOnEditCommit((ListView.EditEvent<String> target) -> {
@@ -148,8 +171,10 @@ public class TemplateDesignerEditorController implements Initializable {
             listView.getItems().set(target.getIndex(), name);
         });
         
-        Button addButton = new Button("Add");
-        addButton.setPadding(new Insets(10));
+        //add
+        Button addButton = new Button("Add new", new Glyph("FontAwesome", FontAwesome.Glyph.PLUS_SQUARE_ALT));
+        addButton.setPadding(new Insets(5));
+        addButton.setDefaultButton(true);
         addButton.setOnAction((ActionEvent actionEvent) -> {
             String name = "Group_" + (listView.getItems().size() + 1);
             if(listView.getItems().contains(name)){
@@ -158,16 +183,30 @@ public class TemplateDesignerEditorController implements Initializable {
             listView.getItems().add(name);
         });
         
-        Button removeButton = new Button("Remove");
-        removeButton.setPadding(new Insets(10));
+        //remove
+        Button removeButton = new Button("Remove selected", new Glyph("FontAwesome", FontAwesome.Glyph.MINUS_SQUARE_ALT).color(Color.RED));
+        removeButton.setPadding(new Insets(5));
+        removeButton.setDefaultButton(false);
         removeButton.setOnAction((ActionEvent actionEvent) -> {
             int selectedIndex = listView.getSelectionModel().getSelectedIndex();
             if(selectedIndex > -1)
                 listView.getItems().remove(selectedIndex);
         });
         
+        //top
+        VBox vbox = new VBox(new Label("Available groups:"), listView);
+        vbox.setPadding(new Insets(5, 5, 0, 5));
+        vbox.setSpacing(5);
+        
+        //bottom
+        HBox hBox = new HBox(removeButton, addButton);
+        hBox.setPadding(new Insets(5));
+        hBox.setSpacing(5);
+        hBox.setAlignment(Pos.CENTER);
+        
         //popover
-        PopOver popOver = new PopOver(BorderPaneBuilder.create().center(listView).bottom(new ToolBar(removeButton, addButton)).build());
+        PopOver popOver = new PopOver(BorderPaneBuilder.create().center(vbox).bottom(hBox).build());
+        popOver.setStyle("-fx-base:#ccc;");
         popOver.setAutoHide(true);
         popOver.show((Node)event.getSource());
     }

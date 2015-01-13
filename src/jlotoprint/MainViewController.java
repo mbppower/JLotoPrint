@@ -11,8 +11,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -23,13 +21,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import jlotoprint.model.Template;
 
 
 /**
@@ -50,6 +49,17 @@ public class MainViewController implements Initializable {
         loadAboutWindow();
     }
     @FXML
+    public void handleOpenTemplateAction(ActionEvent event){
+        final Stage templateChooser = MainViewController.loadTemplateChooser();
+        if(templateChooser != null){
+            templateChooser.getScene().getRoot().addEventHandler(TemplateDialogEvent.SELECTED, (actionEvent) -> {
+				templateChooser.close();
+                Template.load(true);
+			});
+        }
+    }
+    
+    @FXML
     public void handleOpenTemplateDesigner(ActionEvent event){
        
 		try {
@@ -67,8 +77,9 @@ public class MainViewController implements Initializable {
 				stage.close();
 			});
 			stage.setScene(new Scene(root));
+            stage.getIcons().add(new Image("file:resources/icon.png"));
 			stage.setTitle("Template Designer");
-			stage.initModality(Modality.WINDOW_MODAL);
+			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.initOwner(JLotoPrint.stage.getScene().getWindow());
 			stage.show();
 		}
@@ -86,6 +97,7 @@ public class MainViewController implements Initializable {
 			});
 			stage.setScene(new Scene(root));
 			stage.setTitle("Choose a template");
+            stage.getIcons().add(new Image("file:resources/icon.png"));
 			stage.initModality(Modality.WINDOW_MODAL);
 			stage.initOwner(JLotoPrint.stage.getScene().getWindow());
 			stage.show();

@@ -7,46 +7,44 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" minHeight="500.0" minWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.TemplateDesignerEditorController">
+<AnchorPane id="AnchorPane" minHeight="500.0" minWidth="500.0" styleClass="root" stylesheets="@skin.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.TemplateDesignerEditorController">
     <children>
-          <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <children>
-            <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-               <children>
+        <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                    <children>
                         <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" VBox.vgrow="ALWAYS">
-                     <content>
-                        <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-image: url(file:resources/img/transparent_bg.png); -fx-background-repeat: repeat;">
-                           <children>
-                              <Group StackPane.alignment="CENTER">
-                                 <children>
-                                    <Pane fx:id="imageContainer" prefHeight="200.0" prefWidth="200.0" />
-                                 </children>
-                              </Group>
-                           </children>
-                        </StackPane>
-                     </content>
+                            <content>
+                                <StackPane prefHeight="150.0" prefWidth="200.0" styleClass="editorCanvas">
+                                    <children>
+                                        <Group StackPane.alignment="CENTER">
+                                            <children>
+                                                <Pane fx:id="imageContainer" prefHeight="200.0" prefWidth="200.0" />
+                                            </children>
+                                        </Group>
+                                    </children>
+                                </StackPane>
+                            </content>
                         </ScrollPane>
-                  <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="30.0" prefWidth="390.0">
-                    <items>
+                        <ToolBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="30.0" prefWidth="390.0">
+                            <items>
                                 <Slider fx:id="zoomBar" majorTickUnit="10.0" maxWidth="1.7976931348623157E308" min="10.0" minorTickCount="2" nodeOrientation="LEFT_TO_RIGHT" orientation="HORIZONTAL" prefHeight="10.0" prefWidth="145.0" snapToTicks="true" value="100.0" />
-                        <Label fx:id="zoomLevel" prefHeight="17.0" text="100%" textAlignment="RIGHT">
-                           <font>
-                              <Font size="10.0" />
-                           </font>
-                        </Label>
-                    </items>
-                  </ToolBar>
-               </children>
-            </VBox>
-                  <VBox layoutX="3.0" layoutY="71.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="250.0" spacing="10.0" HBox.hgrow="ALWAYS">
-                      <children>
-                  <Accordion>
-                    <panes>
-                      <TitledPane animated="false" text="Mark Properties">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                            <GridPane hgap="5.0" vgap="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <Label fx:id="zoomLevel" prefHeight="17.0" text="100%" textAlignment="RIGHT">
+                                    <font>
+                                        <Font size="10.0" />
+                                    </font>
+                                </Label>
+                            </items>
+                        </ToolBar>
+                    </children>
+                </VBox>
+                <VBox layoutX="3.0" layoutY="71.0" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="240.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                    <children>
+                          <TitledPane animated="false" text="Mark Properties">
+                     <content>
+                                    <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0">
+                                        <children>
+                                            <GridPane hgap="5.0" vgap="5.0">
                                                 <columnConstraints>
                                                     <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
                                                     <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="90.0" />
@@ -59,10 +57,10 @@
                                                 </rowConstraints>
                                                 <children>
                                                     <Label text="Grupo" GridPane.rowIndex="1">
-                                             <padding>
-                                                <Insets right="5.0" />
-                                             </padding>
-                                          </Label>
+                                                        <padding>
+                                                            <Insets right="5.0" />
+                                                        </padding>
+                                                    </Label>
                                                     <ComboBox fx:id="typeCombo" layoutX="30.0" layoutY="142.0" maxWidth="1.7976931348623157E308" prefHeight="25.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
                                                         <HBox.margin>
                                                             <Insets right="10.0" />
@@ -70,100 +68,110 @@
                                                     </ComboBox>
                                                     <TextField fx:id="markValue" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                     <Label text="Tipo" GridPane.rowIndex="2">
-                                             <padding>
-                                                <Insets right="5.0" />
-                                             </padding>
-                                          </Label>
+                                                        <padding>
+                                                            <Insets right="5.0" />
+                                                        </padding>
+                                                    </Label>
                                                     <Label text="Valor" GridPane.rowIndex="3">
-                                             <padding>
-                                                <Insets right="5.0" />
-                                             </padding>
-                                          </Label>
+                                                        <padding>
+                                                            <Insets right="5.0" />
+                                                        </padding>
+                                                    </Label>
                                                     <Label text="Selection" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-                                             <padding>
-                                                <Insets right="5.0" />
-                                             </padding>
-                                          </Label>
-                                          <HBox prefWidth="154.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                             <children>
-                                                          <ComboBox fx:id="groupCombo" maxWidth="1.7976931348623157E308" prefHeight="20.0" HBox.hgrow="ALWAYS">
-                                                              <HBox.margin>
-                                                                  <Insets />
-                                                              </HBox.margin>
-                                                          </ComboBox>
-                                                <Button mnemonicParsing="false" onAction="#handleOpenGroupListAction" text="P" />
-                                             </children>
-                                          </HBox>
+                                                        <padding>
+                                                            <Insets right="5.0" />
+                                                        </padding>
+                                                    </Label>
+                                                    <HBox prefWidth="154.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                        <children>
+                                                            <ComboBox fx:id="groupCombo" maxWidth="1.7976931348623157E308" prefHeight="20.0" HBox.hgrow="ALWAYS">
+                                                                <HBox.margin>
+                                                                    <Insets />
+                                                                </HBox.margin>
+                                                            </ComboBox>
+                                                            <Button fx:id="groupEditButton" mnemonicParsing="false" onAction="#handleOpenGroupListAction" />
+                                                        </children>
+                                                    </HBox>
                                                     <TextField fx:id="currentSelection" editable="false" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" />
                                                 </children>
                                             </GridPane>
-                                 </children>
-                              </AnchorPane>
-                        </content>
-                      </TitledPane>
-                      <TitledPane animated="false" text="Template Properties">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                              <HBox alignment="CENTER" spacing="5.0">
                                  <children>
-                                            <GridPane hgap="5.0" vgap="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                <children>
-                                                    <Label text="Image" GridPane.rowIndex="1">
-                                             <padding>
-                                                <Insets right="5.0" />
-                                             </padding>
-                                          </Label>
-                                                    <Label text="Name">
-                                             <padding>
-                                                <Insets right="5.0" />
-                                             </padding>
-                                          </Label>
-                                                    <TextField fx:id="templateName" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" />
-                                                    <Label text="Image Preview" GridPane.rowIndex="2">
-                                             <padding>
-                                                <Insets right="5.0" />
-                                             </padding>
-                                          </Label>
-                                          <HBox prefWidth="154.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                             <children>
-                                                <TextField fx:id="templateImage" editable="false" prefHeight="25.0" prefWidth="90.0" HBox.hgrow="ALWAYS" />
-                                                <Button mnemonicParsing="false" onAction="#handleImageSelectAction" text="S" />
-                                             </children>
-                                          </HBox>
-                                          <HBox prefWidth="154.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                             <children>
-                                                <TextField fx:id="templateImagePreview" editable="false" prefHeight="25.0" prefWidth="90.0" HBox.hgrow="ALWAYS" />
-                                                <Button mnemonicParsing="false" onAction="#handleImagePreviewSelectAction" text="S" />
-                                             </children>
-                                          </HBox>
-                                                </children>
-                                                <columnConstraints>
-                                                    <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
-                                                    <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
-                                                </columnConstraints>
-                                                <rowConstraints>
-                                                    <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                                    <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                                    <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                                    <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                                </rowConstraints>
-                                            </GridPane>
+                                                  <Button fx:id="addMarkButton" alignment="CENTER" onAction="#handleAddItemAction" prefHeight="25.0" text="Add Mark" textAlignment="CENTER" wrapText="true">
+                                                      <opaqueInsets>
+                                                          <Insets />
+                                                      </opaqueInsets>
+                                                  </Button>
+                                    <Button fx:id="deleteMarkButton" alignment="CENTER" onAction="#handleAddItemAction" prefHeight="25.0" text="Delete Mark" textAlignment="CENTER" wrapText="true">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </Button>
                                  </children>
-                              </AnchorPane>
-                        </content>
-                      </TitledPane>
-                    </panes>
-                  </Accordion>
-                          <Button alignment="CENTER" layoutX="13.0" layoutY="165.0" maxWidth="1.7976931348623157E308" onAction="#handleAddItemAction" prefHeight="25.0" text="Add Mark" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
-                              <HBox.margin>
-                                  <Insets right="10.0" />
-                              </HBox.margin>
-                          </Button>
-                      </children>
-                      <padding>
-                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                      </padding>
-                  </VBox>
-              </children>
-          </HBox>
+                                 <padding>
+                                    <Insets top="5.0" />
+                                 </padding>
+                              </HBox>
+                                        </children>
+                                    </VBox>
+                     </content>
+                          </TitledPane>
+                          <TitledPane animated="false" text="Template Properties">
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                                          <GridPane hgap="5.0" vgap="5.0">
+                                              <children>
+                                                  <Label text="Image" GridPane.rowIndex="1">
+                                                      <padding>
+                                                          <Insets right="5.0" />
+                                                      </padding>
+                                                  </Label>
+                                                  <Label text="Name">
+                                                      <padding>
+                                                          <Insets right="5.0" />
+                                                      </padding>
+                                                  </Label>
+                                                  <TextField fx:id="templateName" prefHeight="25.0" prefWidth="90.0" style="-fx-base: #ccc;" GridPane.columnIndex="1" />
+                                                  <Label text="Image Preview" GridPane.rowIndex="2">
+                                                      <padding>
+                                                          <Insets right="5.0" />
+                                                      </padding>
+                                                  </Label>
+                                                  <HBox prefWidth="154.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                      <children>
+                                                          <TextField fx:id="templateImage" editable="false" prefHeight="25.0" prefWidth="90.0" style="-fx-base: #ccc;" HBox.hgrow="ALWAYS" />
+                                                          <Button fx:id="imagePickButton" mnemonicParsing="false" onAction="#handleImageSelectAction" />
+                                                      </children>
+                                                  </HBox>
+                                                  <HBox prefWidth="154.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                      <children>
+                                                          <TextField fx:id="templateImagePreview" editable="false" prefHeight="25.0" prefWidth="90.0" style="-fx-base: #ccc;" HBox.hgrow="ALWAYS" />
+                                                          <Button fx:id="imagePreviewPickButton" mnemonicParsing="false" onAction="#handleImagePreviewSelectAction" />
+                                                      </children>
+                                                  </HBox>
+                                              </children>
+                                              <columnConstraints>
+                                                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
+                                                  <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                                              </columnConstraints>
+                                              <rowConstraints>
+                                                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                              </rowConstraints>
+                                          </GridPane>
+                           </children>
+                        </VBox>
+                     </content>
+                          </TitledPane>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+            </children>
+        </HBox>
     </children>
 </AnchorPane>

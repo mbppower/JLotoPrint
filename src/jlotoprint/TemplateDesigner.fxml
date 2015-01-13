@@ -7,12 +7,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.TemplateDesignerController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="640.0" styleClass="root" stylesheets="@skin.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.TemplateDesignerController">
     <children>
       
         <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <MenuBar style="-fx-base: #333;">
+                <MenuBar style="-fx-base: #464646;">
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>

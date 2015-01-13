@@ -50,8 +50,8 @@ public class TemplateDialogController implements Initializable {
 	@FXML
 	public Label nameText;
     
-        @FXML
-    	public Label officialSiteText;
+    @FXML
+    public Label officialSiteText;
 
 	@FXML
 	private void handleCancelAction(ActionEvent event) {
@@ -64,7 +64,7 @@ public class TemplateDialogController implements Initializable {
 	private void selectAction(){
         String selectedItem = templateList.getSelectionModel().selectedItemProperty().getValue();
 		if(selectedItem != null){
-			Template.setTemplateFile(new File(selectedItem));
+            Template.setTemplateFile(new File(selectedItem));
             EventUtil.fireEvent(new TemplateDialogEvent(TemplateDialogEvent.SELECTED), selectButton);
         }
     }

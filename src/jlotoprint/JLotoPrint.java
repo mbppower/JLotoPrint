@@ -13,7 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import jlotoprint.model.Template;
-
+import org.controlsfx.glyphfont.GlyphFontRegistry;
+import org.controlsfx.glyphfont.GlyphFont;
 /**
  *
  * @author Marcel.Barbosa
@@ -21,9 +22,12 @@ import jlotoprint.model.Template;
 public class JLotoPrint extends Application {
 	static Parent root;
 	static Stage stage;
-	
+	static GlyphFont fontAwesome;
+    
+    
 	@Override
 	public void start(Stage stage) throws Exception {
+        fontAwesome = GlyphFontRegistry.font("FontAwesome");
         
         //theme
         setUserAgentStylesheet(STYLESHEET_MODENA);

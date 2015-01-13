@@ -38,7 +38,7 @@ import jlotoprint.model.Template;
 public class TemplateDesignerController implements Initializable {
     @FXML
 	public Pane editorContainer;
-
+    
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
         if(Template.isLoaded()){

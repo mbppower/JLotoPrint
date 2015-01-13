@@ -8,20 +8,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" minHeight="400.0" minWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.PrintViewUIPanelController">
+<AnchorPane id="AnchorPane" minHeight="400.0" minWidth="400.0" style="-fx-background-color: #666;" styleClass="root" stylesheets="@skin.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jlotoprint.PrintViewUIPanelController">
     <children>
         <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <center>
-                <AnchorPane fx:id="paginationContainer" minHeight="0.0" minWidth="0.0" style="-fx-background-color: white; -fx-background-image: url(file:resources/img/grain_bg.png); -fx-background-repeat:repeat;">
+                <AnchorPane fx:id="paginationContainer" minHeight="0.0" minWidth="0.0">
                     <children>
                         <VBox fx:id="initialContent" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
-                                <Label alignment="CENTER" text="Please, load your numbers" textAlignment="CENTER">
+                                <Label alignment="CENTER" text="Please, load your numbers" textAlignment="CENTER" textFill="WHITE">
                                     <font>
                                         <Font size="18.0" />
                                     </font>
                                 </Label>
-                                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                <ImageView styleClass="dropShadow" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
                                         <Image url="@file:resources/icon.png" />
                                     </image>

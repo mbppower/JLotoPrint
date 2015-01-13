@@ -247,6 +247,7 @@ public class PrintViewUIPanelController implements Initializable {
             if(templateChooser != null){
                 templateChooser.getScene().getRoot().addEventHandler(TemplateDialogEvent.SELECTED, (actionEvent) -> {
                     templateChooser.close();
+                    Template.load(true);
                     renderLotoPanel();
                     initialContent.setVisible(false);
                 });
