@@ -58,7 +58,10 @@ public class MainViewController implements Initializable {
 			});
         }
     }
-    
+    @FXML
+    public void handleExitAction(ActionEvent event){
+        JLotoPrint.stage.close();
+    }
     @FXML
     public void handleOpenTemplateDesigner(ActionEvent event){
        

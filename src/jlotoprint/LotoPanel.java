@@ -18,7 +18,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -87,7 +93,8 @@ public class LotoPanel extends Pane {
 		String image = Template.getTemplateDir() + Template.getTemplateFile().getParentFile().getName() + "/" + (isEditEnabled ? model.getImagePreview() : model.getImage());
         File imageFile = new File(image);
         if(imageFile.exists()){
-            setStyle("-fx-border-color:red; -fx-background-color: #ccc; -fx-background-repeat: no-repeat; -fx-background-image: url(\"file:" + image + "\"); -fx-background-size:contain");
+            setStyle("-fx-border-color:black;");
+            setBackground(new Background(new BackgroundImage(new Image("file:" + image), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
         }
         setMinSize(w, h);
 		setMaxSize(w, h);
@@ -147,7 +154,7 @@ public class LotoPanel extends Pane {
 
 					Integer posX = (int) Math.min(Math.max((localPoint.getX() - originX), 0), getWidth() - targetWidth);
 					Integer posY = (int) Math.min(Math.max((localPoint.getY() - originY), 0), getHeight() - targetHeight);
-					//target.relocate(posX, posY);
+					
 					target.setTranslateX(posX);
 					target.setTranslateY(posY);
 
@@ -162,7 +169,7 @@ public class LotoPanel extends Pane {
 		return rect;
 	}
 
-	public void createMark(String groupName, String type, String toggleValue) {
+	public MarkInfo createMark(String groupName, String type, String toggleValue) {
 		String id = UUID.randomUUID().toString();
 		MarkInfo m = new MarkInfo(id, groupName, type, toggleValue, 0, 0, 16, 10);
 		createRect(m);
@@ -177,6 +184,8 @@ public class LotoPanel extends Pane {
 			model.getGroupMap().get(m.getGroup()).add(m);
 		}
 		getChildren().add(m.getRect());
+        
+        return m;
 	}
 
 	public void createMarkFromInfo(HashMap<String, ArrayList<MarkInfo>> map) {

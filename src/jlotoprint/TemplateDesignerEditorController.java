@@ -17,15 +17,22 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -42,9 +49,14 @@ import javafx.scene.layout.BorderPaneBuilder;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import jlotoprint.model.MarkInfo;
 import jlotoprint.model.Template;
+import org.apache.sanselan.ImageInfo;
+import org.apache.sanselan.ImageReadException;
+import org.apache.sanselan.Sanselan;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
@@ -55,7 +67,7 @@ import org.controlsfx.glyphfont.Glyph;
  */
 public class TemplateDesignerEditorController implements Initializable {
     @FXML
-	public Pane editorContainer;
+	public Pane root;
 	@FXML
 	public Pane imageContainer;
     @FXML
@@ -108,18 +120,20 @@ public class TemplateDesignerEditorController implements Initializable {
 	private void handleAddItemAction(ActionEvent event) {
 		String groupName = groupCombo.getValue().toString();
 		String typeName = typeCombo.getValue().toString();
-		lotoPanel.createMark(groupName, typeName, markValue.getText());
+		MarkInfo newMark = lotoPanel.createMark(groupName, typeName, markValue.getText());
+        showSelectionAnimation(newMark);
 	}
 
     @FXML
 	private void handleImageSelectAction(ActionEvent event) {
         File imageRef = showImageSelection("image_default");
         if(imageRef != null){
+            getImageDPI(imageRef);
             templateImage.setText(imageRef.getName());
             lotoPanel.setImage();
         }
-        
     }
+    
     @FXML
 	private void handleImagePreviewSelectAction(ActionEvent event) {
         File imageRef = showImageSelection("image_preview");
@@ -240,6 +254,7 @@ public class TemplateDesignerEditorController implements Initializable {
                 groupCombo.setValue(newValue.getGroup());
                 typeCombo.setValue(newValue.getType());
                 markValue.setText(newValue.getToggleValue());
+                showSelectionAnimation(newValue);
             }
 		});
         lotoPanel.loadTemplate();
@@ -294,4 +309,54 @@ public class TemplateDesignerEditorController implements Initializable {
 
         imageContainer.getChildren().add(lotoPanel);
 	}
+    private void showSelectionAnimation(MarkInfo selection){
+        
+        //circle
+        int radius = 20;
+        final Circle circle = new Circle(radius);
+        circle.setDisable(true);
+        circle.setFill(Color.GREY);
+
+        double targetX = selection.getRect().getTranslateX() + selection.getRect().getWidth()/2;
+        double targetY = selection.getRect().getTranslateY() + selection.getRect().getHeight()/2;
+        
+        Point2D p = root.sceneToLocal(imageContainer.localToScene(targetX, targetY));
+        
+        circle.setTranslateX(p.getX());
+        circle.setTranslateY(p.getY());
+        root.getChildren().add(circle);
+
+        //animation
+        FadeTransition fadeTrans = new FadeTransition(Duration.seconds(0.3), circle);
+        fadeTrans.setFromValue(1.0);
+        fadeTrans.setToValue(0.0);
+        fadeTrans.setAutoReverse(true);
+
+        ScaleTransition scaleTran = new ScaleTransition(Duration.seconds(0.4));
+        scaleTran.setFromX(1);
+        scaleTran.setFromY(1);
+        scaleTran.setToX(0);
+        scaleTran.setToY(0);
+        scaleTran.setCycleCount(1);
+        scaleTran.setAutoReverse(true);
+
+        ParallelTransition parallelTransition = new ParallelTransition(circle, fadeTrans, scaleTran);
+        parallelTransition.setOnFinished((ActionEvent event) -> {
+            root.getChildren().remove(circle);
+        });
+        parallelTransition.play();
+    }
+    
+    private void getImageDPI(final File imageFile){
+        try {
+            final ImageInfo imageInfo = Sanselan.getImageInfo(imageFile);
+            final int physicalWidthDpi = imageInfo.getPhysicalWidthDpi();
+            final int physicalHeightDpi = imageInfo.getPhysicalHeightDpi();
+            
+            System.out.println(physicalWidthDpi);
+            System.out.println(imageInfo.getPhysicalHeightInch());
+        }
+        catch(Exception ex) {
+        }
+    }
 }

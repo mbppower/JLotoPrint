@@ -21,6 +21,7 @@
 }
 .button:default{
     -fx-base: #808080;
+    -fx-text-fill: #fff;
 }
 .button:cancel{
     -fx-base: #333;

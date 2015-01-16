@@ -18,20 +18,28 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
+import javafx.animation.ScaleTransition;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
 import javafx.print.PrintResolution;
 import javafx.print.Printer;
 import javafx.print.PrinterJob;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.SnapshotResult;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -42,6 +50,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
@@ -86,12 +95,20 @@ public class PrintViewUIPanelController implements Initializable {
         initialContent.setVisible(true);
         
         //fade
-        FadeTransition ft = new FadeTransition(Duration.millis(2000), initialContent);
-        ft.setFromValue(0.0);
-        ft.setToValue(1.0);
-        ft.setCycleCount(1);
-        ft.setAutoReverse(true);
-        ft.play();
+        FadeTransition fadeTran = new FadeTransition(Duration.seconds(1));
+        fadeTran.setFromValue(0.0);
+        fadeTran.setToValue(1.0);
+        fadeTran.setCycleCount(1);
+        
+        ScaleTransition scaleTran = new ScaleTransition(Duration.seconds(1.2));
+        scaleTran.setFromX(0.5);
+        scaleTran.setFromY(0.5);
+        scaleTran.setToX(1);
+        scaleTran.setToY(1);
+        scaleTran.setCycleCount(1);
+
+        ParallelTransition parallelTransition = new ParallelTransition(initialContent, fadeTran, scaleTran);
+        parallelTransition.play();
 	}
 
 	public List<String> readTextFileAsList(File file) {
@@ -203,33 +220,41 @@ public class PrintViewUIPanelController implements Initializable {
 	private Pane createPage(Integer pageIndex) {	
         
 		Pane page = pageList.get(pageIndex);
-		page.needsLayoutProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+        Group paper = new Group(page);
+        paper.setStyle("-fx-effect: dropshadow( one-pass-box , black , 20 , 0.0 , 0 , 0 ); -fx-background-color: white; -fx-border-width: 1px; -fx-border-color:black; -fx-border-style: solid outside;");
+        paper.needsLayoutProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             double pageWidth = page.getLayoutBounds().getWidth();
             double pageHeight = page.getLayoutBounds().getHeight();
-            double margin = 60.0;
+            double margin = 100.0;
             HashMap<String, Double> result = resizeProportional(pageWidth, pageHeight, pagination.getBoundsInLocal().getWidth() - margin, pagination.getBoundsInLocal().getHeight() - margin, true);
             page.setScaleX(result.get("scaleX"));
             page.setScaleY(result.get("scaleY"));
         });
-		
+        //layout when window is resized
+        JLotoPrint.stage.heightProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            paper.requestLayout();
+        });
+        
 		//center page
-		GridPane.setHgrow(page, Priority.NEVER);
-		GridPane.setVgrow(page, Priority.NEVER);
+		GridPane.setHgrow(paper, Priority.NEVER);
+		GridPane.setVgrow(paper, Priority.NEVER);
 		
 		GridPane centerGrid = new GridPane();
-		centerGrid.setAlignment(Pos.TOP_CENTER);
-		centerGrid.add(page, 0, 0);
-        
+		centerGrid.setAlignment(Pos.CENTER);
+        centerGrid.add(paper, 0, 0);
+
 		return centerGrid;
 	}
 	
 	private Pane getNewPage(GridPane container) {
-		container.setStyle("-fx-background-color: blue; -fx-border-width: 2px; -fx-border-color:orange;");
-		
-		//A4 paper size
-		//-fx-min-width:210mm; -fx-min-height:297mm;
-		container.setMinHeight(2200.0);
-		container.setMinWidth(1300.0);
+		container.setStyle("-fx-background-color: white;");
+			
+        Paper paper = Paper.A4;
+        int dpi = 200;
+        double w = paper.getWidth() * dpi / 72, h = paper.getHeight() * dpi / 72;
+        container.setMaxSize(w, h);
+        container.setMinSize(w, h);
+        
 		container.setGridLinesVisible(true);
 		container.setAlignment(Pos.TOP_LEFT);
 
@@ -288,7 +313,7 @@ public class PrintViewUIPanelController implements Initializable {
                         node.setScaleY(1);
                         node.getTransforms().add(new Translate(0.0, 0.0));
                         node.getTransforms().add(new Scale(result.get("scaleX"), result.get("scaleY")));
-                            
+                        
                         job.printPage(node);
                         node.getTransforms().clear();
                         node.requestLayout();
@@ -347,25 +372,26 @@ public class PrintViewUIPanelController implements Initializable {
             PDDocument doc = null;
             PDPage page = null;
             PDPageContentStream content = null;
-
+            
             try {
                 doc = new PDDocument();
                 
                 for (Pane node : pageList) {	
 
-                    page = new PDPage();
+                    page = new PDPage(PDPage.PAGE_SIZE_A4);
+                    
                     doc.addPage(page);
                     
                     PDRectangle mediaBox = page.getMediaBox();
                     float pageWidth = mediaBox.getWidth();
                     float pageHeight = mediaBox.getHeight();
-                    
+
                     node.getTransforms().clear();
-                    HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageWidth , pageHeight, true);
                     node.setScaleX(1);
                     node.setScaleY(1);
                     node.getTransforms().add(new Translate(0.0, 0.0));
-                    node.getTransforms().add(new Scale(result.get("scaleX"), result.get("scaleY")));
+                    
+                    HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageWidth , pageHeight, true);
                     
                     //get node image
                     WritableImage nodeImage = node.snapshot(null, null);
@@ -373,8 +399,13 @@ public class PrintViewUIPanelController implements Initializable {
 
                     //set page content
                     content = new PDPageContentStream(doc, page);
-                    content.drawImage(new PDJpeg(doc, bufferedImage), 100, 100);
+                    
+                    PDJpeg image = new PDJpeg(doc, bufferedImage, 1f);
+                    content.drawXObject(image, 1, 1, result.get("width").intValue(), result.get("height").intValue());
+                                        
                     content.close();
+                    
+                    //reset node state
                     node.getTransforms().clear();
                     node.requestLayout();
                 }
@@ -386,7 +417,7 @@ public class PrintViewUIPanelController implements Initializable {
                 alert.showAndWait();
             }
             catch(Exception ex) {
-               MainViewController.showExceptionAlert("Error exporting the PDF document", ex.getStackTrace().toString());
+               MainViewController.showExceptionAlert("Error exporting the PDF document", ex.getMessage());
             }
             finally {
                 try {

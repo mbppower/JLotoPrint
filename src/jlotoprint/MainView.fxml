@@ -14,6 +14,8 @@
                         <Menu mnemonicParsing="false" text="File">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#handleOpenTemplateAction" text="Open Template..." />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExitAction" text="Exit" />
                      </items></Menu>
                         <Menu mnemonicParsing="false" text="Tools">
                             <items>
