@@ -5,6 +5,7 @@
  */
 package jlotoprint;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -25,6 +26,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -90,6 +92,21 @@ public class MainViewController implements Initializable {
 			Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
 		}
     }
+    
+    //source file chooser
+    public static File chooseGameSourceFile(){
+        FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Select a source");
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text File", "*.txt"));
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        File source = fileChooser.showOpenDialog(JLotoPrint.stage.getOwner());
+        if(source != null){
+            Template.setSourceFile(source);
+        }
+		return source;
+    }
+    
+    //template file chooser
     public static Stage loadTemplateChooser(){
         final Stage stage = new Stage();
 		try {
@@ -125,7 +142,7 @@ public class MainViewController implements Initializable {
         icon.setFitWidth(48.0);
         dialog.setGraphic(icon);
         dialog.initModality(Modality.APPLICATION_MODAL);
-        
+        dialog.initOwner(JLotoPrint.stage.getScene().getWindow());
         //content
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 0, 10));

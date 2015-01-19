@@ -38,6 +38,7 @@ import javafx.print.Printer;
 import javafx.print.PrinterJob;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SnapshotResult;
 import javafx.scene.control.Alert;
@@ -46,11 +47,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
@@ -73,42 +79,15 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
  */
 public class PrintViewUIPanelController implements Initializable {
 
-	private List<Pane> pageList = new ArrayList<>();
-	private int currentPage = -1;
+	private List<Group> pageList = new ArrayList<>();
 	private Pagination pagination;
-	
-    @FXML
-	public VBox initialContent;
     
 	@FXML
 	public AnchorPane paginationContainer;			
 
-	@FXML
-	public GridPane gridContainer;
-	
-	@FXML
-	public Label pageInfoLabel;
-	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-        initialContent.setOpacity(0.0);
-        initialContent.setVisible(true);
-        
-        //fade
-        FadeTransition fadeTran = new FadeTransition(Duration.seconds(1));
-        fadeTran.setFromValue(0.0);
-        fadeTran.setToValue(1.0);
-        fadeTran.setCycleCount(1);
-        
-        ScaleTransition scaleTran = new ScaleTransition(Duration.seconds(1.2));
-        scaleTran.setFromX(0.5);
-        scaleTran.setFromY(0.5);
-        scaleTran.setToX(1);
-        scaleTran.setToY(1);
-        scaleTran.setCycleCount(1);
-
-        ParallelTransition parallelTransition = new ParallelTransition(initialContent, fadeTran, scaleTran);
-        parallelTransition.play();
+        renderLotoPanel();
 	}
 
 	public List<String> readTextFileAsList(File file) {
@@ -117,7 +96,8 @@ public class PrintViewUIPanelController implements Initializable {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			while ((line = br.readLine()) != null) {
-				lines.add(line);
+                if(!line.trim().isEmpty())
+                    lines.add(line);
 			}
 			br.close();
 		} catch (IOException ex) {
@@ -125,72 +105,68 @@ public class PrintViewUIPanelController implements Initializable {
 
 		return lines;
 	}
+    
+    public ArrayList<Group> importPageList(File sourceFile, Model model) throws Exception{
+        List<String> lines = readTextFileAsList(sourceFile);
+        int groupCount = 2;
+        int count = 0;
+        ArrayList<ArrayList> groupDataList = new ArrayList<>();
+        ArrayList<String[]> data = new ArrayList<>();
+        for (String line : lines) {
+            if (count % groupCount == 0) {
+                data = new ArrayList<>();
+                groupDataList.add(data);
+            }
+            data.add(line.split(Model.NUMBER_SEPARATOR));
+            count++;
+        }
 
+        int colCount = 2;
+        int rowCount = 1;
+        int currentCol = 0;
+        int currentRow = 0;
+
+        GridPane container = new GridPane();
+
+        ArrayList<Group> pageList = new ArrayList<>();
+        pageList.add(getNewPage(container));
+        System.out.println("new page");
+
+        for (ArrayList groupData : groupDataList) {
+
+            if (currentCol > 0 && currentCol % colCount == 0) {
+                currentRow++;
+                currentCol = 0;
+                if (currentRow > rowCount) {
+                    currentRow = 0;
+                    container = new GridPane();
+                    System.out.println("new page");
+                    pageList.add(getNewPage(container));
+                }
+            }
+            LotoPanel lotoPanel = new LotoPanel(model, false);
+            lotoPanel.loadTemplate();
+            lotoPanel.render(groupData);
+            container.add(lotoPanel, currentCol, currentRow);
+
+            System.out.println("groupData: " + groupData.size() + " width: " + container.getBoundsInLocal().getWidth());
+
+            currentCol++;
+        }
+        return pageList;
+    }
+    
 	public void renderLotoPanel() {
-
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Select a source");
-		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text File", "*.txt"));
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-		File sourceFile = fileChooser.showOpenDialog(JLotoPrint.stage.getOwner());
-        Model model = Template.load(true);
         
-		if (sourceFile != null && model != null) {
+		if (Template.getSourceFile() != null && Template.getModel() != null) {
             try{
 
-                List<String> lines = readTextFileAsList(sourceFile);
-                int groupCount = 2;
-                int count = 0;
-                ArrayList<ArrayList> groupDataList = new ArrayList<>();
-                ArrayList<String[]> data = new ArrayList<>();
-                for (String line : lines) {
-                    if (count % groupCount == 0) {
-                        data = new ArrayList<>();
-                        groupDataList.add(data);
-                    }
-                    data.add(line.split("-"));
-                    count++;
-                }
-
-                int colCount = 2;
-                int rowCount = 1;
-                int currentCol = 0;
-                int currentRow = 0;
-
-                GridPane container = new GridPane();
+                pageList = importPageList(Template.getSourceFile(), Template.getModel());
                 
-                
-                pageList = new ArrayList<>();
-                pageList.add(getNewPage(container));
-                System.out.println("---------------- new page");
-
-                for (ArrayList groupData : groupDataList) {
-
-                    if (currentCol > 0 && currentCol % colCount == 0) {
-                        currentRow++;
-                        currentCol = 0;
-                        if (currentRow > rowCount) {
-                            currentRow = 0;
-                            container = new GridPane();
-                            System.out.println("---------------- new page");
-                            pageList.add(getNewPage(container));
-                        }
-                    }
-                    LotoPanel lotoPanel = new LotoPanel(model, false);
-                    lotoPanel.loadTemplate();
-
-                    lotoPanel.render(groupData);
-                    container.add(lotoPanel, currentCol, currentRow);
-
-                    System.out.println("groupData: " + groupData.size() + " width: " + container.getBoundsInLocal().getWidth());
-
-                    currentCol++;
-                }
-
                 //clear previous content
                 paginationContainer.getChildren().clear();
                 pagination = null;
-
+                
                 //create pagination component
                 pagination = new Pagination(pageList.size(), 0);
                 pagination.setPageFactory(new Callback<Integer, Node>() {
@@ -203,83 +179,83 @@ public class PrintViewUIPanelController implements Initializable {
                             return createPage(pageIndex);
                         }
                     }
-                });
-
+                });        
+                
+                //add
                 AnchorPane.setTopAnchor(pagination, 0.0);
                 AnchorPane.setLeftAnchor(pagination, 0.0);
                 AnchorPane.setRightAnchor(pagination, 0.0);
                 AnchorPane.setBottomAnchor(pagination, 0.0);
+
                 paginationContainer.getChildren().add(pagination);
-                
             }
             catch (Exception ex) {
                 Logger.getLogger(PrintViewUIPanelController.class.getName()).log(Level.SEVERE, null, ex);
             }
 		}
 	}
-	private Pane createPage(Integer pageIndex) {	
+	private Parent createPage(Integer pageIndex) {	
         
-		Pane page = pageList.get(pageIndex);
-        Group paper = new Group(page);
+		Group page = pageList.get(pageIndex);
+        Group paper = new Group(page){
+            @Override
+            protected void layoutChildren() {
+                super.layoutChildren();
+                
+                //auto resize paper
+                double pageWidth = page.getLayoutBounds().getWidth();
+                double pageHeight = page.getLayoutBounds().getHeight();
+                double margin = 100.0;
+                HashMap<String, Double> result = resizeProportional(pageWidth, pageHeight, pagination.getWidth() - margin, pagination.getHeight() - margin, true);
+                page.setScaleX(result.get("scaleX"));
+                page.setScaleY(result.get("scaleY"));
+            }
+        };
         paper.setStyle("-fx-effect: dropshadow( one-pass-box , black , 20 , 0.0 , 0 , 0 ); -fx-background-color: white; -fx-border-width: 1px; -fx-border-color:black; -fx-border-style: solid outside;");
-        paper.needsLayoutProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            double pageWidth = page.getLayoutBounds().getWidth();
-            double pageHeight = page.getLayoutBounds().getHeight();
-            double margin = 100.0;
-            HashMap<String, Double> result = resizeProportional(pageWidth, pageHeight, pagination.getBoundsInLocal().getWidth() - margin, pagination.getBoundsInLocal().getHeight() - margin, true);
-            page.setScaleX(result.get("scaleX"));
-            page.setScaleY(result.get("scaleY"));
-        });
         //layout when window is resized
-        JLotoPrint.stage.heightProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+        pagination.needsLayoutProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             paper.requestLayout();
         });
-        
-		//center page
-		GridPane.setHgrow(paper, Priority.NEVER);
-		GridPane.setVgrow(paper, Priority.NEVER);
-		
-		GridPane centerGrid = new GridPane();
-		centerGrid.setAlignment(Pos.CENTER);
-        centerGrid.add(paper, 0, 0);
-
-		return centerGrid;
+       
+		return paper;
 	}
 	
-	private Pane getNewPage(GridPane container) {
-		container.setStyle("-fx-background-color: white;");
-			
+	private Group getNewPage(GridPane grid) {
+		grid.setGridLinesVisible(true);
+		grid.setAlignment(Pos.TOP_LEFT);
+        grid.setHgap(1);
+        grid.setVgap(1);
+        
+        Pane container = new Pane(grid);
         Paper paper = Paper.A4;
-        int dpi = 200;
+        int dpi = Template.getModel().getDpi();
         double w = paper.getWidth() * dpi / 72, h = paper.getHeight() * dpi / 72;
         container.setMaxSize(w, h);
         container.setMinSize(w, h);
+        container.setTranslateX(0);
+        container.setTranslateY(0);
+        container.setStyle("-fx-background-color: white;");
         
-		container.setGridLinesVisible(true);
-		container.setAlignment(Pos.TOP_LEFT);
-
-		return container;
+		return new Group(container);
 	}
 		
 	@FXML
 	private void handleLoadGamesAction(ActionEvent event) {
-        if(Template.isLoaded()){
-            renderLotoPanel();
-            initialContent.setVisible(false);
-        }
-        else{
-            final Stage templateChooser = MainViewController.loadTemplateChooser();
-            if(templateChooser != null){
-                templateChooser.getScene().getRoot().addEventHandler(TemplateDialogEvent.SELECTED, (actionEvent) -> {
-                    templateChooser.close();
-                    Template.load(true);
+        loadSourceFile();
+	}
+	private void loadSourceFile() {
+        final Stage templateChooser = MainViewController.loadTemplateChooser();
+        if(templateChooser != null){
+            templateChooser.getScene().getRoot().addEventHandler(TemplateDialogEvent.SELECTED, (actionEvent) -> {
+                templateChooser.close();
+                Template.load(true);
+                File source = MainViewController.chooseGameSourceFile();
+                if(source != null){
                     renderLotoPanel();
-                    initialContent.setVisible(false);
-                });
-            }
+                }
+            });
         }
 	}
-	
 	@FXML
 	private void handlePrintAction(ActionEvent event) {
 		print();
@@ -291,6 +267,8 @@ public class PrintViewUIPanelController implements Initializable {
 	}
     
 	public void print() {
+        
+        
 		Printer printer = Printer.getDefaultPrinter();
         if(printer == null){
             System.out.println("No printer found, please add a printer");
@@ -303,21 +281,42 @@ public class PrintViewUIPanelController implements Initializable {
             PrintResolution resolution = job.getJobSettings().getPrintResolution();
 
             if (job.showPrintDialog(JLotoPrint.stage.getOwner())) {
+                
                 try {
-                    for (Pane node : pageList) {			
-                        node.getTransforms().clear();
-
-                        HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageLayout.getPrintableWidth() , pageLayout.getPrintableHeight(), true);
-
+                    
+                    PDDocument doc = generatePDF();
+                    if(doc != null){
+                            doc.print(job);
+                    }
+                   /* List<Group> pageList = importPageList(Template.getSourceFile(), Template.getModel());
+                    
+                    double pageWidth = pageLayout.getPrintableWidth() * 200 / 72;
+                    double pageHeight = pageLayout.getPrintableHeight() * 200 / 72;
+                    
+                    System.out.println("pageWidth:" + pageWidth + " pageHeight:" + pageHeight);
+                    
+                    for (Parent node : pageList) {			
+                        
+                        
                         node.setScaleX(1);
                         node.setScaleY(1);
-                        node.getTransforms().add(new Translate(0.0, 0.0));
-                        node.getTransforms().add(new Scale(result.get("scaleX"), result.get("scaleY")));
+                        node.layout();
+                        
+                        System.out.println("getWidth:" + node.getBoundsInLocal().getWidth() + " getHeight:" + node.getBoundsInLocal().getHeight());
+                    
+                        HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageWidth, pageHeight, false);
+                        
+                        System.out.println("scaleX:" + result.get("scaleX") + " scaleY:" + result.get("scaleY"));
+                        
+                        node.setTranslateX(0);
+                        node.setTranslateY(0);
+                        node.setScaleX(result.get("scaleX"));
+                        node.setScaleY(result.get("scaleY"));
+                        node.applyCss();
+                        node.layout();
                         
                         job.printPage(node);
-                        node.getTransforms().clear();
-                        node.requestLayout();
-                    }
+                    }*/
                 }
                 catch(Exception e){
                     e.printStackTrace();
@@ -326,7 +325,7 @@ public class PrintViewUIPanelController implements Initializable {
                     job.endJob();
                 }
             }
-        }
+        }*/
 	}
 	
 	public HashMap<String, Double> resizeProportional(double ow, double oh, double w, double h, Boolean dontResizeWhenSmaller) {
@@ -357,77 +356,80 @@ public class PrintViewUIPanelController implements Initializable {
 		}
 		return result;
 	}
-    
     public void exportToPDF(){
-        
         FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select a destination");
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF File", "*.pdf"));
 		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         fileChooser.setInitialFileName("PDF Export");
 		File sourceFile = fileChooser.showSaveDialog(JLotoPrint.stage.getOwner());
-
-		if (sourceFile != null) {
-
-            PDDocument doc = null;
-            PDPage page = null;
-            PDPageContentStream content = null;
-            
-            try {
-                doc = new PDDocument();
-                
-                for (Pane node : pageList) {	
-
-                    page = new PDPage(PDPage.PAGE_SIZE_A4);
-                    
-                    doc.addPage(page);
-                    
-                    PDRectangle mediaBox = page.getMediaBox();
-                    float pageWidth = mediaBox.getWidth();
-                    float pageHeight = mediaBox.getHeight();
-
-                    node.getTransforms().clear();
-                    node.setScaleX(1);
-                    node.setScaleY(1);
-                    node.getTransforms().add(new Translate(0.0, 0.0));
-                    
-                    HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageWidth , pageHeight, true);
-                    
-                    //get node image
-                    WritableImage nodeImage = node.snapshot(null, null);
-                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(nodeImage, null);
-
-                    //set page content
-                    content = new PDPageContentStream(doc, page);
-                    
-                    PDJpeg image = new PDJpeg(doc, bufferedImage, 1f);
-                    content.drawXObject(image, 1, 1, result.get("width").intValue(), result.get("height").intValue());
-                                        
-                    content.close();
-                    
-                    //reset node state
-                    node.getTransforms().clear();
-                    node.requestLayout();
-                }
+        try {
+            PDDocument doc = generatePDF();
+            if(doc != null){
                 doc.save(sourceFile);
-                
                 //sucess
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "PDF document sucessfully exported.", ButtonType.OK);
                 alert.initModality(Modality.APPLICATION_MODAL);
                 alert.showAndWait();
             }
-            catch(Exception ex) {
-               MainViewController.showExceptionAlert("Error exporting the PDF document", ex.getMessage());
-            }
-            finally {
-                try {
-                    if (content != null) { content.close(); }
-                    if (doc != null) { doc.close(); }
-                }
-                catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+        }
+        catch(Exception ex){
+            MainViewController.showExceptionAlert("Error exporting the PDF document", ex.getMessage());
+        }
+    }
+    public PDDocument generatePDF() throws Exception{
+
+        PDDocument doc = null;
+        PDPage page = null;
+        PDPageContentStream content = null;
+
+        try {
+            doc = new PDDocument();
+            List<Group> pageList = importPageList(Template.getSourceFile(), Template.getModel());
+            for (Parent node : pageList) {	
+
+                page = new PDPage(PDPage.PAGE_SIZE_A4);
+
+                doc.addPage(page);
+
+                PDRectangle mediaBox = page.getMediaBox();
+                float pageWidth = mediaBox.getWidth();
+                float pageHeight = mediaBox.getHeight();
+
+                node.setTranslateX(0);
+                node.setTranslateY(0);
+                node.setScaleX(1);
+                node.setScaleY(1);
+                node.applyCss();
+                node.layout();
+                HashMap<String, Double> result = resizeProportional(node.getBoundsInLocal().getWidth(), node.getBoundsInLocal().getHeight(), pageWidth , pageHeight, true);
+
+                //get node image
+                WritableImage nodeImage = node.snapshot(null, null);
+                BufferedImage bufferedImage = SwingFXUtils.fromFXImage(nodeImage, null);
+
+                //set page content
+                content = new PDPageContentStream(doc, page);
+
+                PDJpeg image = new PDJpeg(doc, bufferedImage, 1f);
+                content.drawXObject(image, 0, 0, result.get("width").intValue(), result.get("height").intValue());
+
+                content.close();
             }
         }
+        catch(Exception ex) {
+           throw ex;
+        }
+        finally {
+            try {
+                if (content != null) { content.close(); }
+                if (doc != null) { doc.close(); }
+            }
+            catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        return doc;
     }
 }

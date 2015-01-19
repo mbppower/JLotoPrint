@@ -29,7 +29,7 @@
                         </Menu>
                     </menus>
                 </MenuBar>
-                <fx:include fx:id="printViewUIPanel" source="PrintViewUIPanel.fxml" VBox.vgrow="ALWAYS" />
+                <fx:include fx:id="printViewUIPanel" source="StartScreen.fxml" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
     </children>

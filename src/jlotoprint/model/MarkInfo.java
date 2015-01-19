@@ -52,6 +52,7 @@ public class MarkInfo {
 	}
 	
 	public Color getColor(){
+        
 		Random rand = new Random();
 		int r = rand.nextInt(255);
 		int g = rand.nextInt(255);

@@ -141,25 +141,45 @@
                                                   <HBox prefWidth="154.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                       <children>
                                                           <TextField fx:id="templateImage" editable="false" prefHeight="25.0" prefWidth="90.0" style="-fx-base: #ccc;" HBox.hgrow="ALWAYS" />
-                                                          <Button fx:id="imagePickButton" mnemonicParsing="false" onAction="#handleImageSelectAction" />
+                                                          <Button fx:id="imagePickButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleImageSelectAction" prefHeight="25.0" HBox.hgrow="NEVER" />
                                                       </children>
                                                   </HBox>
                                                   <HBox prefWidth="154.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                       <children>
                                                           <TextField fx:id="templateImagePreview" editable="false" prefHeight="25.0" prefWidth="90.0" style="-fx-base: #ccc;" HBox.hgrow="ALWAYS" />
-                                                          <Button fx:id="imagePreviewPickButton" mnemonicParsing="false" onAction="#handleImagePreviewSelectAction" />
+                                                          <Button fx:id="imagePreviewPickButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleImagePreviewSelectAction" prefHeight="25.0" />
                                                       </children>
                                                   </HBox>
+                                    <Label text="DPI" GridPane.rowIndex="3">
+                                       <padding>
+                                          <Insets right="5.0" />
+                                       </padding>
+                                    </Label>
+                                    <TextField fx:id="templateImageDpi" editable="false" prefHeight="25.0" prefWidth="90.0" style="-fx-base: #ccc;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label text="Width" GridPane.rowIndex="4">
+                                       <padding>
+                                          <Insets right="5.0" />
+                                       </padding>
+                                    </Label>
+                                    <TextField fx:id="templateImageWidth" editable="false" prefHeight="25.0" prefWidth="90.0" style="-fx-base: #ccc;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <TextField fx:id="templateImageHeight" editable="false" prefHeight="25.0" prefWidth="90.0" style="-fx-base: #ccc;" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <Label text="Height" GridPane.rowIndex="5">
+                                       <padding>
+                                          <Insets right="5.0" />
+                                       </padding>
+                                    </Label>
                                               </children>
                                               <columnConstraints>
                                                   <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" />
                                                   <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
                                               </columnConstraints>
                                               <rowConstraints>
-                                                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                                                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" />
+                                                  <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" />
+                                                  <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" />
+                                                  <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" />
+                                    <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" />
+                                    <RowConstraints fillHeight="false" maxHeight="25.0" minHeight="25.0" />
                                               </rowConstraints>
                                           </GridPane>
                            </children>

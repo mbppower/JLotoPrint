@@ -39,6 +39,17 @@ public class Template {
 	
 	//current template file
 	private static File templateFile;
+    
+    //current numbers source file
+	private static File sourceFile;
+
+    public static File getSourceFile() {
+        return sourceFile;
+    }
+
+    public static void setSourceFile(File sourceFile) {
+        Template.sourceFile = sourceFile;
+    }
 
 	public static File getTemplateFile() {
 		return templateFile;

@@ -15,22 +15,17 @@ import java.util.ArrayList;
 
 import java.util.ResourceBundle;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
-import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -42,7 +37,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPaneBuilder;
@@ -53,9 +47,9 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import jlotoprint.model.MarkInfo;
+import jlotoprint.model.Model;
 import jlotoprint.model.Template;
 import org.apache.sanselan.ImageInfo;
-import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -88,6 +82,12 @@ public class TemplateDesignerEditorController implements Initializable {
     public TextField templateImage;
     @FXML
     public TextField templateImagePreview;
+    @FXML
+    public TextField templateImageDpi;
+    @FXML
+    public TextField templateImageWidth;
+    @FXML
+    public TextField templateImageHeight;
     
 	public static double ZOOM = .5;
 
@@ -128,7 +128,14 @@ public class TemplateDesignerEditorController implements Initializable {
 	private void handleImageSelectAction(ActionEvent event) {
         File imageRef = showImageSelection("image_default");
         if(imageRef != null){
-            getImageDPI(imageRef);
+            Model model = Template.getModel();
+            ImageInfo info = getImageInfo(imageRef);
+            if(info != null){
+                templateImageDpi.setText(info.getPhysicalHeightDpi() + "");
+                templateImageWidth.setText(info.getWidth() + "");
+                templateImageHeight.setText(info.getHeight() + "");
+            }
+           
             templateImage.setText(imageRef.getName());
             lotoPanel.setImage();
         }
@@ -229,8 +236,8 @@ public class TemplateDesignerEditorController implements Initializable {
          
         //nodes
 		typeCombo.setItems(FXCollections.observableArrayList(
-            "option",
-            "numberCount"
+            Model.OPTION_TYPE,
+            Model.NUMBER_COUNT_TYPE
 		));
 		typeCombo.setValue(typeCombo.getItems().get(0));
         imageContainer.setOnScroll((ScrollEvent event) -> {
@@ -297,6 +304,7 @@ public class TemplateDesignerEditorController implements Initializable {
         templateName.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             Template.getModel().setName(newValue);
 		});
+        
         templateImage.setText(Template.getModel().getImage());
         templateImage.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
 			Template.getModel().setImage(newValue);
@@ -305,6 +313,21 @@ public class TemplateDesignerEditorController implements Initializable {
         templateImagePreview.setText(Template.getModel().getImagePreview());
         templateImagePreview.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
 			Template.getModel().setImagePreview(newValue);
+		});
+        
+        templateImageDpi.setText(Template.getModel().getDpi() + "");
+        templateImageDpi.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            Template.getModel().setDpi(Integer.parseInt(newValue));
+		});
+        
+        templateImageWidth.setText(Template.getModel().getImageWidth() + "");
+        templateImageWidth.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+			Template.getModel().setImageWidth(Integer.parseInt(newValue));
+		});
+        
+        templateImageHeight.setText(Template.getModel().getImageHeight() + "");
+        templateImageHeight.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+			Template.getModel().setImageHeight(Integer.parseInt(newValue));
 		});
 
         imageContainer.getChildren().add(lotoPanel);
@@ -347,16 +370,13 @@ public class TemplateDesignerEditorController implements Initializable {
         parallelTransition.play();
     }
     
-    private void getImageDPI(final File imageFile){
+    private ImageInfo getImageInfo(final File imageFile){
+        ImageInfo imageInfo = null;
         try {
-            final ImageInfo imageInfo = Sanselan.getImageInfo(imageFile);
-            final int physicalWidthDpi = imageInfo.getPhysicalWidthDpi();
-            final int physicalHeightDpi = imageInfo.getPhysicalHeightDpi();
-            
-            System.out.println(physicalWidthDpi);
-            System.out.println(imageInfo.getPhysicalHeightInch());
+            imageInfo = Sanselan.getImageInfo(imageFile);
         }
         catch(Exception ex) {
         }
+        return imageInfo;
     }
 }

@@ -111,6 +111,7 @@ public class TemplateDesignerController implements Initializable {
 
             Alert dialog = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to save changes?", saveAndExit, dontSave, ButtonType.CANCEL);
             dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(JLotoPrint.stage.getScene().getWindow());
             Optional<ButtonType> result = dialog.showAndWait();
             //save and exit
             if (result.get() == saveAndExit){

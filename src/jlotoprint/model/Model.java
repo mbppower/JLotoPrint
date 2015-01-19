@@ -8,39 +8,38 @@ package jlotoprint.model;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.stage.Modality;
 import jlotoprint.model.MarkInfo;
-import org.apache.commons.io.IOUtils;
 
 /**
  *
  * @author Marcel.Barbosa
  */
 public class Model {
+    //separator for source file numbers
+    public static String NUMBER_SEPARATOR = "-";
+    //mark nubmer counter
+    public static String NUMBER_COUNT_TYPE = "numberCount";
+    //mark option value
+    public static String OPTION_TYPE = "option";
+    
     @Expose
 	private String name;
 	@Expose
-	private String image = "lotofacil.png";
+	private String image = "";
 	@Expose
-	private String imagePreview = "lotofacil-preview.png";
+	private String imagePreview = "";
 	@Expose
-	private double imageWidth = 644;
+	private double imageWidth = 0;
 	@Expose
-	private double imageHeight = 1095;
+	private double imageHeight = 0;
 	@Expose
 	private int dpi = 200;
-
 	@Expose
-	public HashMap<String, ArrayList<MarkInfo>> groupMap = new HashMap<>();
-    
+	public HashMap<String, ArrayList<MarkInfo>> groupMap = new HashMap<>();  
+    @Expose
+	public ArrayList<MarkInfo> numberCountMap = new ArrayList<>();
     @Expose
 	public ArrayList<String> groupList = new ArrayList<>();
 
@@ -60,8 +59,7 @@ public class Model {
         this.groupList = groupList;
     }
 
-	@Expose
-	public ArrayList<MarkInfo> numberCountMap = new ArrayList<>();
+	
 
     public String getName() {
         return name;

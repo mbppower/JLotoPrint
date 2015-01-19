@@ -5,6 +5,7 @@
  */
 package jlotoprint;
 
+import java.io.Console;
 import jlotoprint.model.Model;
 import jlotoprint.model.MarkInfo;
 import java.io.File;
@@ -103,12 +104,13 @@ public class LotoPanel extends Pane {
 	public Rectangle createRect(final MarkInfo m) {
 		Rectangle rect = new Rectangle();
 		
-		rect.setFill(isEditEnabled ? (m.getType().equals("numberCount") ? Color.RED : m.getColor()) : Color.TRANSPARENT);
+		rect.setFill(isEditEnabled ? (m.getType().equals(Model.NUMBER_COUNT_TYPE) ? Color.RED : m.getColor()) : Color.TRANSPARENT);
 		rect.setId(m.getId());
 		rect.setTranslateX(m.getX());
 		rect.setTranslateY(m.getY());
 		rect.setWidth(m.getWidth());
 		rect.setHeight(m.getHeight());
+        
 		if (isEditEnabled) {
 			rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent e) {
@@ -174,7 +176,7 @@ public class LotoPanel extends Pane {
 		MarkInfo m = new MarkInfo(id, groupName, type, toggleValue, 0, 0, 16, 10);
 		createRect(m);
 		
-		if(type.equals("numberCount")){
+		if(type.equals(Model.NUMBER_COUNT_TYPE)){
 			model.getNumberCountMap().add(m);
 		}
 		else{
@@ -224,7 +226,9 @@ public class LotoPanel extends Pane {
 			throw new Exception("Numbers has diferent sizes.");
 		}
 		else{
+            System.out.println(model.getNumberCountMap() + " --- " + size);
 			for (MarkInfo m : model.getNumberCountMap()) {
+                System.out.println(m.getToggleValue() + " --- " + size);
 				m.render(size);
 			}
 		}
