@@ -15,138 +15,152 @@ import javafx.scene.shape.Rectangle;
  * @author Marcel.Barbosa
  */
 public class MarkInfo {
-	@Expose
-	private String id;
-	@Expose
-	private String toggleValue;
-	@Expose
-	private String group;
-	@Expose
-	private String type;
-	@Expose
-	private double x;
-	@Expose
-	private double y;
-	@Expose
-	private double width;
-	@Expose
-	private double height;
-	
-	private Rectangle rect;
-	
-	public MarkInfo(String id, String group, String type, String toggleValue, double x, double y, double width, double height) {
-		this.id = id;
-		this.group = group;
-		this.type = type;
-		this.toggleValue = toggleValue;
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-	}
-	
-	void toggle() {
-		if(rect != null){
-			rect.setFill(Color.BLACK);
-		}
-	}
-	
-	public Color getColor(){
-        
-		Random rand = new Random();
-		int r = rand.nextInt(255);
-		int g = rand.nextInt(255);
-		int b = rand.nextInt(255);
-		Color color = Color.rgb(r,g,b);
-		return color;
-	}
-	
-	public void render(String[] n) {
-		for(String v : n){
-			if(v.equals(toggleValue)){
-				toggle();
-			}
-		}
-	}
-	
-	public void render(int size) {
-		
-		System.out.println("size:" + size + ", toggleValue:" + Integer.parseInt(toggleValue));
-		
-		if(size == Integer.parseInt(toggleValue)){
-			toggle();
-		}
-	}
-	
-	public String getId() {
-		return id;
-	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    @Expose
+    private String id;
+    @Expose
+    private String toggleValue;
+    @Expose
+    private String group;
+    @Expose
+    private String type;
+    @Expose
+    private double x;
+    @Expose
+    private double y;
+    @Expose
+    private double width;
+    @Expose
+    private double height;
 
-	public String getToggleValue() {
-		return toggleValue;
-	}
+    private boolean toggled;
 
-	public void setToggleValue(String toggleValue) {
-		this.toggleValue = toggleValue;
-	}
+    private Rectangle rect;
 
-	public String getGroup() {
-		return group;
-	}
+    public MarkInfo(String id, String group, String type, String toggleValue, double x, double y, double width, double height) {
+        this.id = id;
+        this.group = group;
+        this.type = type;
+        this.toggleValue = toggleValue;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+    public boolean getToggled() {
+        return toggled;
+    }
+    private void setToggled(Boolean toggled) {
+        this.toggled = toggled;
+        if (rect != null) {
+            if (toggled) {
+                rect.setFill(Color.BLACK);
+            }
+            else {
+                rect.setFill(Color.TRANSPARENT);
+            }
+        }
+    }
 
-	public void setGroup(String group) {
-		this.group = group;
-	}
+    public Color getColor() {
 
-	public String getType() {
-		return type;
-	}
+        Random rand = new Random();
+        int r = rand.nextInt(255);
+        int g = rand.nextInt(255);
+        int b = rand.nextInt(255);
+        Color color = Color.rgb(r, g, b);
+        return color;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void render(String[] n) {
+        for (String v : n) {
+            int value = Integer.parseInt(v);
+            if (value == (Integer.parseInt(toggleValue))) {
+                setToggled(true);
+                break;
+            } else {
+                setToggled(false);
+            }
+        }
+    }
 
-	public double getX() {
-		return x;
-	}
+    public void render(int size) {
+        if (size == Integer.parseInt(toggleValue)) {
+            setToggled(true);
+        } else {
+            setToggled(false);
+        }
+    }
 
-	public void setX(double x) {
-		this.x = x;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public double getY() {
-		return y;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setY(double y) {
-		this.y = y;
-	}
+    public String getToggleValue() {
+        return toggleValue;
+    }
 
-	public double getWidth() {
-		return width;
-	}
+    public void setToggleValue(String toggleValue) {
+        this.toggleValue = toggleValue;
+    }
 
-	public void setWidth(double width) {
-		this.width = width;
-	}
+    public String getGroup() {
+        return group;
+    }
 
-	public double getHeight() {
-		return height;
-	}
+    public void setGroup(String group) {
+        this.group = group;
+    }
 
-	public void setHeight(double height) {
-		this.height = height;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public Rectangle getRect() {
-		return rect;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setRect(Rectangle rect) {
-		this.rect = rect;
-	}
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public Rectangle getRect() {
+        return rect;
+    }
+
+    public void setRect(Rectangle rect) {
+        this.rect = rect;
+    }
 }

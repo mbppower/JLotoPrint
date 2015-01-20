@@ -10,6 +10,7 @@ import jlotoprint.model.Model;
 import jlotoprint.model.MarkInfo;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -39,6 +40,11 @@ public class LotoPanel extends Pane {
 
 	private double originX;
 	private double originY;
+    private int numberCount;
+
+    public int getNumberCount() {
+        return numberCount;
+    }
 	public Boolean isEditEnabled = true;
     
 	private Model model;
@@ -51,12 +57,10 @@ public class LotoPanel extends Pane {
         @Override protected void invalidated() {
             super.invalidated();
             MarkInfo newValue = get();
-            
             if ((oldValue == null && newValue != null) ||
-                    oldValue != null && ! oldValue.equals(newValue)) {
+                oldValue != null && ! oldValue.equals(newValue)) {
                 valueInvalidated();
             }
-            
             oldValue = newValue;
         }
     };
@@ -66,13 +70,14 @@ public class LotoPanel extends Pane {
         if(oldValue != null){
             oldValue.getRect().setStyle("-fx-stroke-width: 0");
         }
-        value.getRect().setStyle("-fx-stroke: black;" +
-            "-fx-stroke-type: outside; " +
-            "-fx-stroke-width: 2;" +
-            "-fx-stroke-dash-array: 2 2 2 2;" +
-            "-fx-stroke-dash-offset: 4;" +
-            "-fx-stroke-line-cap: butt;");
-        
+        if(value != null){
+            value.getRect().setStyle("-fx-stroke: black;" +
+                "-fx-stroke-type: outside; " +
+                "-fx-stroke-width: 2;" +
+                "-fx-stroke-dash-array: 2 2 2 2;" +
+                "-fx-stroke-dash-offset: 4;" +
+                "-fx-stroke-line-cap: butt;");
+        }
         selectionProperty().set(value);
     }
     public final MarkInfo getSelection() { return selectionProperty().get(); }
@@ -114,21 +119,7 @@ public class LotoPanel extends Pane {
 		if (isEditEnabled) {
 			rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent e) {
-					if (e.isSecondaryButtonDown()) {
-						Node target = ((Node) e.getTarget());
-						String id = target.getId();
-						for (Entry<String, ArrayList<MarkInfo>> list : model.getGroupMap().entrySet()) {
-							for (MarkInfo m : list.getValue()) {
-								if (m.getId() == id) {
-									getChildren().remove(target);
-									list.getValue().remove(m);
-								}
-							}
-						}
-					}
-					else{
-						setSelection(m);
-					}
+					setSelection(m);
 				}
 			});
 			rect.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -189,7 +180,36 @@ public class LotoPanel extends Pane {
         
         return m;
 	}
+    
+    public void deleteMark(MarkInfo markInfo){
+        if(markInfo != null){
+            if(markInfo.equals(getSelection())){
+                setSelection(null);
+            }
+            String id = markInfo.getId();
 
+            //remove from group list
+            for (Entry<String, ArrayList<MarkInfo>> list : model.getGroupMap().entrySet()) {
+                for (MarkInfo m : list.getValue()) {
+                    if (m.getId() == id) {
+                        getChildren().remove(markInfo.getRect());
+                        list.getValue().remove(m);
+                        break;
+                    }
+                }
+            }
+            //remove from option list
+            ArrayList<MarkInfo> list = model.getNumberCountMap();
+            for (MarkInfo m : list) {
+                if (m.getId() == id) {
+                    getChildren().remove(markInfo.getRect());
+                    list.remove(m);
+                    break;
+                }
+            }
+        }
+    }
+    
 	public void createMarkFromInfo(HashMap<String, ArrayList<MarkInfo>> map) {
 		for (Entry<String, ArrayList<MarkInfo>> list : map.entrySet()) {
 			createMarkFromInfo(list.getValue());
@@ -203,35 +223,34 @@ public class LotoPanel extends Pane {
 	}
 
 	void render(ArrayList<String[]> data) throws Exception {
-		Boolean isValid = true;
 		int size = 0;
 		int i = 0;
-		groupMap:
 		for (ArrayList<MarkInfo> group : model.getGroupMap().values()) {
-			for (MarkInfo m : group) {
-				if (i < data.size()) {
+			int toggledSize = 0;
+            if (i < data.size()) {
+                for (MarkInfo m : group) {
 					if(i > 0 && data.get(i).length != data.get(i - 1).length){
-						isValid = false;
-						break groupMap;
+						throw new Exception("Size mismatch: " + Arrays.toString(data.get(i)) + " != " + Arrays.toString(data.get(i - 1)));
 					}
 					else{
 						size = data.get(i).length;
 						m.render(data.get(i));
+                        if(m.getToggled()){
+                            toggledSize++;
+                        }
 					}
-				}
-			}
+        		}
+                if(size > 0 && toggledSize != size){
+                    throw new Exception("Number mismatch.\r\nExpected size: " + size + "\r\nActual size: " + toggledSize + "\r\nGame: " + Arrays.toString(data.get(i)));
+                }
+            }
 			i++;
 		}
-		if(!isValid){
-			throw new Exception("Numbers has diferent sizes.");
-		}
-		else{
-            System.out.println(model.getNumberCountMap() + " --- " + size);
-			for (MarkInfo m : model.getNumberCountMap()) {
-                System.out.println(m.getToggleValue() + " --- " + size);
-				m.render(size);
-			}
-		}
+        
+        numberCount = size;
+        for (MarkInfo m : model.getNumberCountMap()) {
+            m.render(size);
+        }
 	}
 
 	public void loadTemplate() {

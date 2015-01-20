@@ -13,6 +13,11 @@
 .menu-bar .menu-item:focused{
     -fx-background-color: #333;
 }
+
+.text-field:readonly{
+    -fx-background-color: #333;
+    -fx-text-fill: #ccc
+}
 .text-field{
     -fx-base: #ccc;
 }

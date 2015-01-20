@@ -102,7 +102,7 @@
                                                           <Insets />
                                                       </opaqueInsets>
                                                   </Button>
-                                    <Button fx:id="deleteMarkButton" alignment="CENTER" onAction="#handleAddItemAction" prefHeight="25.0" text="Delete Mark" textAlignment="CENTER" wrapText="true">
+                                    <Button fx:id="deleteMarkButton" alignment="CENTER" onAction="#handleDeleteItemAction" prefHeight="25.0" text="Delete Mark" textAlignment="CENTER" wrapText="true">
                                        <opaqueInsets>
                                           <Insets />
                                        </opaqueInsets>

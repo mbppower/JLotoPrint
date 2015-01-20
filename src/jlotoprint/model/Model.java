@@ -17,49 +17,49 @@ import jlotoprint.model.MarkInfo;
  * @author Marcel.Barbosa
  */
 public class Model {
+
     //separator for source file numbers
+
     public static String NUMBER_SEPARATOR = "-";
     //mark nubmer counter
     public static String NUMBER_COUNT_TYPE = "numberCount";
     //mark option value
     public static String OPTION_TYPE = "option";
-    
+
     @Expose
-	private String name;
-	@Expose
-	private String image = "";
-	@Expose
-	private String imagePreview = "";
-	@Expose
-	private double imageWidth = 0;
-	@Expose
-	private double imageHeight = 0;
-	@Expose
-	private int dpi = 200;
-	@Expose
-	public HashMap<String, ArrayList<MarkInfo>> groupMap = new HashMap<>();  
+    private String name;
     @Expose
-	public ArrayList<MarkInfo> numberCountMap = new ArrayList<>();
+    private String image = "";
     @Expose
-	public ArrayList<String> groupList = new ArrayList<>();
+    private String imagePreview = "";
+    @Expose
+    private double imageWidth = 0;
+    @Expose
+    private double imageHeight = 0;
+    @Expose
+    private int dpi = 200;
+    @Expose
+    public HashMap<String, ArrayList<MarkInfo>> groupMap = new HashMap<>();
+    @Expose
+    public ArrayList<MarkInfo> numberCountMap = new ArrayList<>();
+    @Expose
+    public ArrayList<String> groupList = new ArrayList<>();
 
     public ArrayList<String> getGroupList() {
-        if(groupList.size() == 0){
+        if (groupList.size() == 0) {
             ArrayList<String> defaultList = new ArrayList<>();
             defaultList.add("Group_1");
             defaultList.add("Group_2");
             setGroupList(defaultList);
             return defaultList;
-        }
-        else{
+        } else {
             return groupList;
         }
     }
+
     public void setGroupList(ArrayList<String> groupList) {
         this.groupList = groupList;
     }
-
-	
 
     public String getName() {
         return name;
@@ -68,68 +68,69 @@ public class Model {
     public void setName(String name) {
         this.name = name;
     }
-	public String getImage() {
-		return image;
-	}
 
-	public void setImage(String image) {
-		this.image = image;
-	}
+    public String getImage() {
+        return image;
+    }
 
-	public String getImagePreview() {
-		return imagePreview;
-	}
+    public void setImage(String image) {
+        this.image = image;
+    }
 
-	public void setImagePreview(String imagePreview) {
-		this.imagePreview = imagePreview;
-	}
+    public String getImagePreview() {
+        return imagePreview;
+    }
 
-	public double getImageWidth() {
-		return imageWidth;
-	}
+    public void setImagePreview(String imagePreview) {
+        this.imagePreview = imagePreview;
+    }
 
-	public void setImageWidth(double imageWidth) {
-		this.imageWidth = imageWidth;
-	}
+    public double getImageWidth() {
+        return imageWidth;
+    }
 
-	public double getImageHeight() {
-		return imageHeight;
-	}
+    public void setImageWidth(double imageWidth) {
+        this.imageWidth = imageWidth;
+    }
 
-	public void setImageHeight(double imageHeight) {
-		this.imageHeight = imageHeight;
-	}
+    public double getImageHeight() {
+        return imageHeight;
+    }
 
-	public HashMap<String, ArrayList<MarkInfo>> getGroupMap() {
-		return groupMap;
-	}
+    public void setImageHeight(double imageHeight) {
+        this.imageHeight = imageHeight;
+    }
 
-	public void setGroupMap(HashMap<String, ArrayList<MarkInfo>> groupMap) {
-		this.groupMap = groupMap;
-	}
+    public HashMap<String, ArrayList<MarkInfo>> getGroupMap() {
+        return groupMap;
+    }
 
-	public int getDpi() {
-		return dpi;
-	}
+    public void setGroupMap(HashMap<String, ArrayList<MarkInfo>> groupMap) {
+        this.groupMap = groupMap;
+    }
 
-	public void setDpi(int dpi) {
-		this.dpi = dpi;
-	}
+    public int getDpi() {
+        return dpi;
+    }
 
-	public ArrayList<MarkInfo> getNumberCountMap() {
-		return numberCountMap;
-	}
+    public void setDpi(int dpi) {
+        this.dpi = dpi;
+    }
 
-	public void setNumberCountMap(ArrayList<MarkInfo> numberCountMap) {
-		this.numberCountMap = numberCountMap;
-	}
+    public ArrayList<MarkInfo> getNumberCountMap() {
+        return numberCountMap;
+    }
 
-	public Model() {
+    public void setNumberCountMap(ArrayList<MarkInfo> numberCountMap) {
+        this.numberCountMap = numberCountMap;
+    }
 
-	}
-    
+    public Model() {
+
+    }
+
     public String toJson() {
-		Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		return g.toJson(this);
-	}
+        Gson g = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        return g.toJson(this);
+    }
 }

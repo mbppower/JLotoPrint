@@ -11,8 +11,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-
 import java.util.ResourceBundle;
 import java.util.UUID;
 import javafx.animation.FadeTransition;
@@ -46,6 +47,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import javafx.util.converter.CurrencyStringConverter;
+import javafx.util.converter.NumberStringConverter;
 import jlotoprint.model.MarkInfo;
 import jlotoprint.model.Model;
 import jlotoprint.model.Template;
@@ -122,6 +125,11 @@ public class TemplateDesignerEditorController implements Initializable {
 		String typeName = typeCombo.getValue().toString();
 		MarkInfo newMark = lotoPanel.createMark(groupName, typeName, markValue.getText());
         showSelectionAnimation(newMark);
+	}
+    
+    @FXML
+	private void handleDeleteItemAction(ActionEvent event) {
+		lotoPanel.deleteMark(lotoPanel.getSelection());
 	}
 
     @FXML
@@ -256,11 +264,11 @@ public class TemplateDesignerEditorController implements Initializable {
         //lotoPanel
         lotoPanel = new LotoPanel(Template.getModel(), true);
 		lotoPanel.selectionProperty().addListener((ObservableValue<? extends MarkInfo> observable, MarkInfo oldValue, MarkInfo newValue) -> {
+            currentSelection.setText(newValue != null ? newValue.getId() : null);
+            markValue.setText(newValue != null ? newValue.getToggleValue() : null);
             if (newValue != null) {
-                currentSelection.setText(newValue.getId());
                 groupCombo.setValue(newValue.getGroup());
                 typeCombo.setValue(newValue.getType());
-                markValue.setText(newValue.getToggleValue());
                 showSelectionAnimation(newValue);
             }
 		});
@@ -329,6 +337,13 @@ public class TemplateDesignerEditorController implements Initializable {
         templateImageHeight.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
 			Template.getModel().setImageHeight(Integer.parseInt(newValue));
 		});
+        
+        /*
+        DecimalFormat decimalFormat = new DecimalFormat("0.00");
+        decimalFormat.format(doubleNumber) // from double to number format
+        NumberStringConverter numberConverter = new NumberStringConverter(); from string to double
+        numberConverter.fromString(stringNumber).doubleValue();
+        */
 
         imageContainer.getChildren().add(lotoPanel);
 	}

@@ -158,7 +158,8 @@ public class MainViewController implements Initializable {
     
     public static void showExceptionAlert(String message, String details){
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
-
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initOwner(JLotoPrint.stage.getScene().getWindow());
         TextArea textArea = new TextArea(details);
         textArea.setEditable(false);
         textArea.setWrapText(true);
