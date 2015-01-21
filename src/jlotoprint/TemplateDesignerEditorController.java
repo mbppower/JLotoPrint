@@ -25,11 +25,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.geometry.Side;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -37,8 +40,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPaneBuilder;
 import javafx.scene.layout.HBox;
@@ -46,6 +53,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import javafx.util.converter.CurrencyStringConverter;
 import javafx.util.converter.NumberStringConverter;
@@ -107,6 +115,9 @@ public class TemplateDesignerEditorController implements Initializable {
 	public Button addMarkButton;
     @FXML
 	public Button deleteMarkButton;
+    
+    private double contextMenuPosX = 0, contextMenuPosY = 0;
+    
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
         //icons
@@ -121,29 +132,31 @@ public class TemplateDesignerEditorController implements Initializable {
 	}
 	@FXML
 	private void handleAddItemAction(ActionEvent event) {
-		String groupName = groupCombo.getValue().toString();
-		String typeName = typeCombo.getValue().toString();
-		MarkInfo newMark = lotoPanel.createMark(groupName, typeName, markValue.getText());
-        showSelectionAnimation(newMark);
+		addNewMark(0, 0);
 	}
+    
+    private void addNewMark(double x, double y){
+        String groupName = groupCombo.getValue().toString();
+		String typeName = typeCombo.getValue().toString();
+		MarkInfo newMark = lotoPanel.createMark(groupName, typeName, markValue.getText(), x, y);
+        showSelectionAnimation(newMark);
+    }
     
     @FXML
 	private void handleDeleteItemAction(ActionEvent event) {
 		lotoPanel.deleteMark(lotoPanel.getSelection());
 	}
-
+    
     @FXML
 	private void handleImageSelectAction(ActionEvent event) {
         File imageRef = showImageSelection("image_default");
         if(imageRef != null){
-            Model model = Template.getModel();
             ImageInfo info = getImageInfo(imageRef);
             if(info != null){
                 templateImageDpi.setText(info.getPhysicalHeightDpi() + "");
                 templateImageWidth.setText(info.getWidth() + "");
                 templateImageHeight.setText(info.getHeight() + "");
             }
-           
             templateImage.setText(imageRef.getName());
             lotoPanel.setImage();
         }
@@ -153,6 +166,12 @@ public class TemplateDesignerEditorController implements Initializable {
 	private void handleImagePreviewSelectAction(ActionEvent event) {
         File imageRef = showImageSelection("image_preview");
         if(imageRef != null){
+            ImageInfo info = getImageInfo(imageRef);
+            if(info != null){
+                templateImageDpi.setText(info.getPhysicalHeightDpi() + "");
+                templateImageWidth.setText(info.getWidth() + "");
+                templateImageHeight.setText(info.getHeight() + "");
+            }
             templateImagePreview.setText(imageRef.getName());
             lotoPanel.setImage();
         }
@@ -344,7 +363,35 @@ public class TemplateDesignerEditorController implements Initializable {
         NumberStringConverter numberConverter = new NumberStringConverter(); from string to double
         numberConverter.fromString(stringNumber).doubleValue();
         */
-
+        
+        //context menu
+        ContextMenu addMarkContextMenu = new ContextMenu();
+        addMarkContextMenu.setAutoHide(true);
+        MenuItem addMarkHere = new MenuItem("Add Mark here");
+        addMarkHere.setOnAction((ActionEvent e) -> {
+            Point2D pos = lotoPanel.screenToLocal(contextMenuPosX, contextMenuPosY);
+            addNewMark(pos.getX(), pos.getY());
+        });
+        addMarkContextMenu.getItems().addAll(addMarkHere);
+        
+        lotoPanel.setOnMouseClicked((MouseEvent event) -> {
+            if(!lotoPanel.getClass().equals(event.getTarget().getClass())){   
+                addMarkContextMenu.hide();
+                event.consume();
+            }
+            else {
+                lotoPanel.removeMarkContextMenu.hide();  
+                if(event.getButton() == MouseButton.SECONDARY){
+                    contextMenuPosX = event.getScreenX();
+                    contextMenuPosY = event.getScreenY();
+                    addMarkContextMenu.show(lotoPanel, contextMenuPosX, contextMenuPosY);
+                }
+                else{
+                    addMarkContextMenu.hide();
+                }
+            }
+        });
+        
         imageContainer.getChildren().add(lotoPanel);
 	}
     private void showSelectionAnimation(MarkInfo selection){

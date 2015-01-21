@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
@@ -30,13 +31,18 @@
 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
 </VBox.margin>
                            <children>
-                              <Label fx:id="nameText" alignment="CENTER" minWidth="100.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                              <Label fx:id="officialSiteText" alignment="CENTER" minWidth="100.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                               <ImageView fx:id="previewImage" fitHeight="275.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                                  <effect>
-                                    <DropShadow blurType="TWO_PASS_BOX" color="#0000009a" height="10.0" offsetX="4.0" offsetY="4.0" radius="4.5" width="10.0" />
-                                 </effect>
-                              </ImageView>
+                                    <Reflection fraction="0.2" topOpacity="0.2" />
+                                 </effect></ImageView>
+                              <Label fx:id="nameText" alignment="CENTER" minWidth="100.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <effect>
+                                    <DropShadow />
+                                 </effect></Label>
+                              <Label fx:id="officialSiteText" alignment="CENTER" minWidth="100.0" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                            </children>
 </GridPane>
 </children></VBox>

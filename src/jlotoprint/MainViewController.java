@@ -8,6 +8,8 @@ package jlotoprint;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +33,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import jlotoprint.model.Template;
-
+import org.apache.commons.math3.stat.inference.TestUtils;
 
 /**
  *
@@ -39,98 +41,99 @@ import jlotoprint.model.Template;
  */
 public class MainViewController implements Initializable {
 
-	@FXML
-	public Pane printViewUIPanel;
-    
-	@Override
-	public void initialize(URL url, ResourceBundle rb) {
-		
-	}
     @FXML
-    public void handleAboutAction(ActionEvent event){
+    public Pane printViewUIPanel;
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+    }
+
+    @FXML
+    public void handleAboutAction(ActionEvent event) {
         loadAboutWindow();
     }
+
     @FXML
-    public void handleOpenTemplateAction(ActionEvent event){
+    public void handleOpenTemplateAction(ActionEvent event) {
         final Stage templateChooser = MainViewController.loadTemplateChooser();
-        if(templateChooser != null){
+        if (templateChooser != null) {
             templateChooser.getScene().getRoot().addEventHandler(TemplateDialogEvent.SELECTED, (actionEvent) -> {
-				templateChooser.close();
+                templateChooser.close();
                 Template.load(true);
-			});
+            });
         }
     }
+
     @FXML
-    public void handleExitAction(ActionEvent event){
+    public void handleExitAction(ActionEvent event) {
         JLotoPrint.stage.close();
     }
+
     @FXML
-    public void handleOpenTemplateDesigner(ActionEvent event){
-       
-		try {
+    public void handleOpenTemplateDesigner(ActionEvent event) {
+
+        try {
             FXMLLoader dialog = new FXMLLoader(MainViewController.class.getResource("TemplateDesigner.fxml"));
-			Parent root = (Parent)dialog.load();
+            Parent root = (Parent) dialog.load();
             final Stage stage = new Stage();
             stage.setOnCloseRequest((WindowEvent windowEvent) -> {
-                boolean shouldClose = ((TemplateDesignerController)dialog.getController()).showSaveChangesDialog();
+                boolean shouldClose = ((TemplateDesignerController) dialog.getController()).showSaveChangesDialog();
                 //cancel event
                 if (!shouldClose) {
                     windowEvent.consume();
                 }
             });
-			root.addEventHandler(TemplateDesignerEvent.CLOSE, actionEvent -> {
-				stage.close();
-			});
-			stage.setScene(new Scene(root));
+            root.addEventHandler(TemplateDesignerEvent.CLOSE, actionEvent -> {
+                stage.close();
+            });
+            stage.setScene(new Scene(root));
             stage.getIcons().add(new Image("file:resources/icon.png"));
-			stage.setTitle("Template Designer");
-			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.initOwner(JLotoPrint.stage.getScene().getWindow());
-			stage.show();
-		}
-		catch (IOException ex) {
-			Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
-		}
+            stage.setTitle("Template Designer");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(JLotoPrint.stage.getScene().getWindow());
+            stage.show();
+        } catch (IOException ex) {
+            Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
+
     //source file chooser
-    public static File chooseGameSourceFile(){
+    public static File chooseGameSourceFile() {
         FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Select a source");
-		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text File", "*.txt"));
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setTitle("Select a source");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text File", "*.txt"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         File source = fileChooser.showOpenDialog(JLotoPrint.stage.getOwner());
-        if(source != null){
+        if (source != null) {
             Template.setSourceFile(source);
         }
-		return source;
+        return source;
     }
-    
+
     //template file chooser
-    public static Stage loadTemplateChooser(){
+    public static Stage loadTemplateChooser() {
         final Stage stage = new Stage();
-		try {
-			FXMLLoader dialog = new FXMLLoader(MainViewController.class.getResource("TemplateDialog.fxml"));
-			Parent root = (Parent)dialog.load();
-			root.addEventHandler(TemplateDialogEvent.CANCELED, (actionEvent) -> {
-				stage.close();
-			});
-			stage.setScene(new Scene(root));
-			stage.setTitle("Choose a template");
+        try {
+            FXMLLoader dialog = new FXMLLoader(MainViewController.class.getResource("TemplateDialog.fxml"));
+            Parent root = (Parent) dialog.load();
+            root.addEventHandler(TemplateDialogEvent.CANCELED, (actionEvent) -> {
+                stage.close();
+            });
+            stage.setScene(new Scene(root));
+            stage.setTitle("Choose a template");
             stage.getIcons().add(new Image("file:resources/icon.png"));
-			stage.initModality(Modality.WINDOW_MODAL);
-			stage.initOwner(JLotoPrint.stage.getScene().getWindow());
-			stage.show();
-		}
-		catch (IOException ex) {
-			Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(JLotoPrint.stage.getScene().getWindow());
+            stage.show();
+        } catch (IOException ex) {
+            Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
             return null;
-		}
+        }
         return stage;
     }
-    
-    public static void loadAboutWindow(){
-        
+
+    public static void loadAboutWindow() {
+
         //setup
         Dialog dialog = new Dialog<>();
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
@@ -146,17 +149,17 @@ public class MainViewController implements Initializable {
         //content
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 0, 10));
-        
+
         //text
         TextArea textArea = new TextArea("For more info, please visit: https://github.com/mbppower/JLotoPanel");
         textArea.setWrapText(true);
         grid.add(textArea, 0, 0);
         dialog.getDialogPane().setContent(grid);
-        
+
         dialog.showAndWait();
     }
-    
-    public static void showExceptionAlert(String message, String details){
+
+    public static void showExceptionAlert(String message, String details) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initOwner(JLotoPrint.stage.getScene().getWindow());
@@ -165,7 +168,7 @@ public class MainViewController implements Initializable {
         textArea.setWrapText(true);
 
         GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 10, 0, 10)); 
+        grid.setPadding(new Insets(10, 10, 0, 10));
         grid.add(textArea, 0, 0);
 
         //set content

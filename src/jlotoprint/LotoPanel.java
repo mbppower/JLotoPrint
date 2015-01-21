@@ -20,7 +20,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -41,7 +44,8 @@ public class LotoPanel extends Pane {
 	private double originX;
 	private double originY;
     private int numberCount;
-
+    public ContextMenu removeMarkContextMenu;
+    
     public int getNumberCount() {
         return numberCount;
     }
@@ -90,6 +94,15 @@ public class LotoPanel extends Pane {
         this.model = model;
 		this.isEditEnabled = isEditEnabled;
 		setImage();
+        
+        //context menu
+        removeMarkContextMenu = new ContextMenu();
+        removeMarkContextMenu.setAutoHide(true);
+        MenuItem removeThisMark = new MenuItem("Remove this mark");
+        removeThisMark.setOnAction((ActionEvent e) -> {
+            deleteMark(getSelection());
+        });
+        removeMarkContextMenu.getItems().addAll(removeThisMark);
 	}
     
     public final void setImage(){
@@ -117,9 +130,14 @@ public class LotoPanel extends Pane {
 		rect.setHeight(m.getHeight());
         
 		if (isEditEnabled) {
+
+            final Pane pane = this;
 			rect.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent e) {
+                    rect.requestFocus();
 					setSelection(m);
+                    if(e.getButton() == MouseButton.SECONDARY)
+                        removeMarkContextMenu.show(pane, e.getScreenX(), e.getScreenY());
 				}
 			});
 			rect.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -162,9 +180,9 @@ public class LotoPanel extends Pane {
 		return rect;
 	}
 
-	public MarkInfo createMark(String groupName, String type, String toggleValue) {
+	public MarkInfo createMark(String groupName, String type, String toggleValue, double x, double y) {
 		String id = UUID.randomUUID().toString();
-		MarkInfo m = new MarkInfo(id, groupName, type, toggleValue, 0, 0, 16, 10);
+		MarkInfo m = new MarkInfo(id, groupName, type, toggleValue, x, y, 16, 10);
 		createRect(m);
 		
 		if(type.equals(Model.NUMBER_COUNT_TYPE)){
